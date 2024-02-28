@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:food_delivery/view/login/welcome_view.dart';
-import 'package:food_delivery/view/main_tabview/main_tabview.dart';
+import 'package:orderkar/view/login/welcome_view.dart';
+import 'package:orderkar/view/main_tabview/main_tabview.dart';
 
 import '../../common/globs.dart';
 
@@ -19,18 +19,17 @@ class _StarupViewState extends State<StartupView> {
   }
 
   void goWelcomePage() async {
-
-      await Future.delayed( const Duration(seconds: 3) );
-      welcomePage();
+    await Future.delayed(const Duration(seconds: 3));
+    welcomePage();
   }
-  void welcomePage(){
 
+  void welcomePage() {
     if (Globs.udValueBool(Globs.userLogin)) {
-       Navigator.push(context,
+      Navigator.push(context,
           MaterialPageRoute(builder: (context) => const MainTabView()));
-    }else{
-       Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const WelcomeView()));
+    } else {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const WelcomeView()));
     }
   }
 
@@ -39,6 +38,7 @@ class _StarupViewState extends State<StartupView> {
     var media = MediaQuery.of(context).size;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Stack(
         alignment: Alignment.center,
         children: [
@@ -49,9 +49,9 @@ class _StarupViewState extends State<StartupView> {
             fit: BoxFit.cover,
           ),
           Image.asset(
-            "assets/img/app_logo.png",
-             width: media.width * 0.55,
-            height: media.width * 0.55,
+            "assets/img/orderkar_Logo.png",
+            width: media.width * 0.7,
+            height: media.width * 0.7,
             fit: BoxFit.contain,
           ),
         ],

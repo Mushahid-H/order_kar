@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:food_delivery/common/color_extension.dart';
-import 'package:food_delivery/common/extension.dart';
-import 'package:food_delivery/common_widget/round_button.dart';
-import 'package:food_delivery/view/login/login_view.dart';
+import 'package:orderkar/common/color_extension.dart';
+import 'package:orderkar/common/extension.dart';
+import 'package:orderkar/common_widget/round_button.dart';
+import 'package:orderkar/view/login/login_view.dart';
 import '../../common/globs.dart';
 import '../../common/service_call.dart';
 import '../../common_widget/round_textfield.dart';
@@ -16,7 +16,6 @@ class NewPasswordView extends StatefulWidget {
 }
 
 class _NewPasswordViewState extends State<NewPasswordView> {
-  
   TextEditingController txtPassword = TextEditingController();
   TextEditingController txtConfirmPassword = TextEditingController();
 
@@ -60,7 +59,7 @@ class _NewPasswordViewState extends State<NewPasswordView> {
               const SizedBox(
                 height: 25,
               ),
-               RoundTextfield(
+              RoundTextfield(
                 hintText: "Confirm Password",
                 controller: txtConfirmPassword,
                 obscureText: true,
@@ -68,9 +67,11 @@ class _NewPasswordViewState extends State<NewPasswordView> {
               const SizedBox(
                 height: 30,
               ),
-              RoundButton(title: "Next", onPressed: () {
-                btnSubmit();
-              }),
+              RoundButton(
+                  title: "Next",
+                  onPressed: () {
+                    btnSubmit();
+                  }),
             ],
           ),
         ),
@@ -78,11 +79,10 @@ class _NewPasswordViewState extends State<NewPasswordView> {
     );
   }
 
-   //TODO: Action
+  //TODO: Action
   void btnSubmit() {
-
-    if(txtPassword.text.length <6) {
-      mdShowAlert(Globs.appName, MSG.enterPassword, () { });
+    if (txtPassword.text.length < 6) {
+      mdShowAlert(Globs.appName, MSG.enterPassword, () {});
       return;
     }
 
@@ -90,12 +90,13 @@ class _NewPasswordViewState extends State<NewPasswordView> {
       mdShowAlert(Globs.appName, MSG.enterPasswordNotMatch, () {});
       return;
     }
-   
 
     endEditing();
 
-    serviceCallForgotSetNew({"user_id": widget.nObj[KKey.userId].toString(), "reset_code": widget.nObj[KKey.resetCode].toString(),
-    "new_password": txtPassword.text
+    serviceCallForgotSetNew({
+      "user_id": widget.nObj[KKey.userId].toString(),
+      "reset_code": widget.nObj[KKey.resetCode].toString(),
+      "new_password": txtPassword.text
     });
   }
 
@@ -108,10 +109,14 @@ class _NewPasswordViewState extends State<NewPasswordView> {
         withSuccess: (responseObj) async {
       Globs.hideHUD();
       if (responseObj[KKey.status] == "1") {
-        mdShowAlert(Globs.appName,
-            responseObj[KKey.message] as String? ?? MSG.success, () {
-              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const LoginView() ), (route) => false);
-            });
+        mdShowAlert(
+            Globs.appName, responseObj[KKey.message] as String? ?? MSG.success,
+            () {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginView()),
+              (route) => false);
+        });
       } else {
         mdShowAlert(Globs.appName,
             responseObj[KKey.message] as String? ?? MSG.fail, () {});

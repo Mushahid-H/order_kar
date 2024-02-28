@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:food_delivery/common/color_extension.dart';
-import 'package:food_delivery/common/extension.dart';
-import 'package:food_delivery/common_widget/round_button.dart';
-import 'package:food_delivery/view/login/otp_view.dart';
+import 'package:orderkar/common/color_extension.dart';
+import 'package:orderkar/common/extension.dart';
+import 'package:orderkar/common_widget/round_button.dart';
+import 'package:orderkar/view/login/otp_view.dart';
 import '../../common/globs.dart';
 import '../../common/service_call.dart';
 import '../../common_widget/round_textfield.dart';
@@ -20,7 +20,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
 
   @override
   Widget build(BuildContext context) {
-
+    var media = MediaQuery.of(context).size;
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -28,6 +28,12 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              Image.asset(
+                'assets/img/orderkar_logo.png',
+                width: media.width * 0.65,
+                height: media.width * 0.45,
+                fit: BoxFit.contain,
+              ),
               const SizedBox(
                 height: 64,
               ),
@@ -38,11 +44,9 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                     fontSize: 30,
                     fontWeight: FontWeight.w800),
               ),
-
-               const SizedBox(
+              const SizedBox(
                 height: 15,
               ),
-
               Text(
                 "Please enter your email to receive a\n reset code to create a new password via email",
                 textAlign: TextAlign.center,
@@ -62,12 +66,11 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
               const SizedBox(
                 height: 30,
               ),
-             
-              RoundButton(title: "Send", onPressed: () {
-                btnSubmit();
-                
-              }),
-              
+              RoundButton(
+                  title: "Send",
+                  onPressed: () {
+                    btnSubmit();
+                  }),
             ],
           ),
         ),
@@ -84,9 +87,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
 
     endEditing();
 
-    serviceCallForgotRequest({
-      "email": txtEmail.text
-    });
+    serviceCallForgotRequest({"email": txtEmail.text});
   }
 
   //TODO: ServiceCall
@@ -98,10 +99,10 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
         withSuccess: (responseObj) async {
       Globs.hideHUD();
       if (responseObj[KKey.status] == "1") {
-        
-        Navigator.push(context, MaterialPageRoute(builder: (context) => OTPView(email: txtEmail.text) ) );
-
-        
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => OTPView(email: txtEmail.text)));
       } else {
         mdShowAlert(Globs.appName,
             responseObj[KKey.message] as String? ?? MSG.fail, () {});

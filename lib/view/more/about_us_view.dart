@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:food_delivery/common/color_extension.dart';
+import 'package:orderkar/common/color_extension.dart';
 
 import 'my_order_view.dart';
 
@@ -75,7 +75,6 @@ class _AboutUsViewState extends State<AboutUsView> {
                 shrinkWrap: true,
                 padding: EdgeInsets.zero,
                 itemCount: aboutTextArr.length,
-               
                 itemBuilder: ((context, index) {
                   var txt = aboutTextArr[index] as String? ?? "";
                   return Container(
@@ -99,8 +98,7 @@ class _AboutUsViewState extends State<AboutUsView> {
                           child: Text(
                             txt,
                             style: TextStyle(
-                                color: TColor.primaryText,
-                                fontSize: 14),
+                                color: TColor.primaryText, fontSize: 14),
                           ),
                         ),
                       ],

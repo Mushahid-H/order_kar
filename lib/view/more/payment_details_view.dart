@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:food_delivery/common/color_extension.dart';
-import 'package:food_delivery/common_widget/round_icon_button.dart';
-import 'package:food_delivery/view/more/add_card_view.dart';
+import 'package:orderkar/common/color_extension.dart';
+import 'package:orderkar/common_widget/round_icon_button.dart';
+import 'package:orderkar/view/more/add_card_view.dart';
 
 import '../../common_widget/round_button.dart';
 import 'my_order_view.dart';
@@ -58,7 +58,7 @@ class _PaymentDetailsViewState extends State<PaymentDetailsView> {
                     ),
                     IconButton(
                       onPressed: () {
-                         Navigator.push(
+                        Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => const MyOrderView()));
@@ -218,8 +218,8 @@ class _PaymentDetailsViewState extends State<PaymentDetailsView> {
                     fontSize: 16,
                     onPressed: () {
                       showModalBottomSheet(
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
                           context: context,
                           builder: (context) {
                             return const AddCardView();

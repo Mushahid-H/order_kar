@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:food_delivery/common/color_extension.dart';
-import 'package:food_delivery/common/extension.dart';
-import 'package:food_delivery/common_widget/round_button.dart';
-import 'package:food_delivery/view/login/login_view.dart';
+import 'package:orderkar/common/color_extension.dart';
+import 'package:orderkar/common/extension.dart';
+import 'package:orderkar/common_widget/round_button.dart';
+import 'package:orderkar/view/login/login_view.dart';
 
 import '../../common/globs.dart';
 import '../../common/service_call.dart';
@@ -28,6 +28,7 @@ class _SignUpViewState extends State<SignUpView> {
 
   @override
   Widget build(BuildContext context) {
+    var media = MediaQuery.of(context).size;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -37,21 +38,20 @@ class _SignUpViewState extends State<SignUpView> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(
-                height: 64,
+                height: 22,
+              ),
+              Image.asset(
+                "assets/img/orderkar_logo.png",
+                width: media.width * 0.65,
+                height: media.width * 0.45,
+                fit: BoxFit.contain,
               ),
               Text(
-                "Sign Up",
+                "Create an Account",
                 style: TextStyle(
                     color: TColor.primaryText,
                     fontSize: 30,
                     fontWeight: FontWeight.w800),
-              ),
-              Text(
-                "Add your details to sign up",
-                style: TextStyle(
-                    color: TColor.secondaryText,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500),
               ),
               const SizedBox(
                 height: 25,
@@ -91,7 +91,7 @@ class _SignUpViewState extends State<SignUpView> {
                 controller: txtPassword,
                 obscureText: true,
               ),
-               const SizedBox(
+              const SizedBox(
                 height: 25,
               ),
               RoundTextfield(
@@ -102,15 +102,17 @@ class _SignUpViewState extends State<SignUpView> {
               const SizedBox(
                 height: 25,
               ),
-              RoundButton(title: "Sign Up", onPressed: () {
-                btnSignUp();
-                //  Navigator.push(
-                //       context,
-                //       MaterialPageRoute(
-                //         builder: (context) => const OTPView(),
-                //       ),
-                //     );
-              }),
+              RoundButton(
+                  title: "Sign Up",
+                  onPressed: () {
+                    btnSignUp();
+                    //  Navigator.push(
+                    //       context,
+                    //       MaterialPageRoute(
+                    //         builder: (context) => const OTPView(),
+                    //       ),
+                    //     );
+                  }),
               const SizedBox(
                 height: 30,
               ),
@@ -152,7 +154,6 @@ class _SignUpViewState extends State<SignUpView> {
 
   //TODO: Action
   void btnSignUp() {
-
     if (txtName.text.isEmpty) {
       mdShowAlert(Globs.appName, MSG.enterName, () {});
       return;
@@ -187,7 +188,6 @@ class _SignUpViewState extends State<SignUpView> {
 
     serviceCallSignUp({
       "name": txtName.text,
-
       "mobile": txtMobile.text,
       "email": txtEmail.text,
       "address": txtAddress.text,
@@ -208,7 +208,7 @@ class _SignUpViewState extends State<SignUpView> {
       if (responseObj[KKey.status] == "1") {
         Globs.udSet(responseObj[KKey.payload] as Map? ?? {}, Globs.userPayload);
         Globs.udBoolSet(true, Globs.userLogin);
-        
+
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(

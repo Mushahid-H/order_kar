@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:food_delivery/view/more/about_us_view.dart';
-import 'package:food_delivery/view/more/inbox_view.dart';
-import 'package:food_delivery/view/more/payment_details_view.dart';
+import 'package:orderkar/view/more/about_us_view.dart';
+import 'package:orderkar/view/more/inbox_view.dart';
+import 'package:orderkar/view/more/payment_details_view.dart';
 
 import '../../common/color_extension.dart';
 import '../../common/service_call.dart';

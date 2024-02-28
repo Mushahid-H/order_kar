@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:food_delivery/common/color_extension.dart';
+import 'package:orderkar/common/color_extension.dart';
 
 import 'my_order_view.dart';
 
@@ -103,15 +103,17 @@ class _NotificationsViewState extends State<NotificationsView> {
                 padding: EdgeInsets.zero,
                 itemCount: notificationArr.length,
                 separatorBuilder: ((context, index) => Divider(
-                  indent: 25,
-                  endIndent: 25,
+                      indent: 25,
+                      endIndent: 25,
                       color: TColor.secondaryText.withOpacity(0.4),
                       height: 1,
                     )),
                 itemBuilder: ((context, index) {
                   var cObj = notificationArr[index] as Map? ?? {};
                   return Container(
-                    decoration: BoxDecoration(color: index % 2 == 0 ? TColor.white : TColor.textfield ),
+                    decoration: BoxDecoration(
+                        color:
+                            index % 2 == 0 ? TColor.white : TColor.textfield),
                     padding: const EdgeInsets.symmetric(
                         vertical: 15, horizontal: 25),
                     child: Row(

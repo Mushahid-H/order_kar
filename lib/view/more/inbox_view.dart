@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:food_delivery/common/color_extension.dart';
+import 'package:orderkar/common/color_extension.dart';
 
 import 'my_order_view.dart';
 
@@ -176,8 +176,7 @@ class _InboxViewState extends State<InboxView> {
                                 cObj["detail"].toString(),
                                 maxLines: 2,
                                 style: TextStyle(
-                                    color: TColor.secondaryText,
-                                    fontSize: 14),
+                                    color: TColor.secondaryText, fontSize: 14),
                               ),
                             ],
                           ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:food_delivery/common/color_extension.dart';
-import 'package:food_delivery/common_widget/round_button.dart';
+import 'package:orderkar/common/color_extension.dart';
+import 'package:orderkar/common_widget/round_button.dart';
 
 import '../../common_widget/popular_resutaurant_row.dart';
 import '../more/my_order_view.dart';
@@ -129,7 +129,8 @@ class _OfferViewState extends State<OfferView> {
                 child: SizedBox(
                   width: 140,
                   height: 30,
-                  child: RoundButton(title: "check Offers", fontSize: 12 , onPressed: () {}),
+                  child: RoundButton(
+                      title: "check Offers", fontSize: 12, onPressed: () {}),
                 ),
               ),
               const SizedBox(

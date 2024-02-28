@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:food_delivery/common/color_extension.dart';
-import 'package:food_delivery/common/extension.dart';
-import 'package:food_delivery/common/globs.dart';
-import 'package:food_delivery/common_widget/round_button.dart';
-import 'package:food_delivery/view/login/rest_password_view.dart';
-import 'package:food_delivery/view/login/sing_up_view.dart';
-import 'package:food_delivery/view/on_boarding/on_boarding_view.dart';
+import 'package:orderkar/common/color_extension.dart';
+import 'package:orderkar/common/extension.dart';
+import 'package:orderkar/common/globs.dart';
+import 'package:orderkar/common_widget/round_button.dart';
+import 'package:orderkar/view/login/rest_password_view.dart';
+import 'package:orderkar/view/login/sing_up_view.dart';
+import 'package:orderkar/view/on_boarding/on_boarding_view.dart';
 
 import '../../common/service_call.dart';
 import '../../common_widget/round_icon_button.dart';
@@ -34,7 +34,13 @@ class _LoginViewState extends State<LoginView> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(
-                height: 64,
+                height: 22,
+              ),
+              Image.asset(
+                "assets/img/orderkar_Logo.png",
+                width: media.width * 0.65,
+                height: media.width * 0.55,
+                fit: BoxFit.contain,
               ),
               Text(
                 "Login",
@@ -42,13 +48,6 @@ class _LoginViewState extends State<LoginView> {
                     color: TColor.primaryText,
                     fontSize: 30,
                     fontWeight: FontWeight.w800),
-              ),
-              Text(
-                "Add your details to login",
-                style: TextStyle(
-                    color: TColor.secondaryText,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500),
               ),
               const SizedBox(
                 height: 25,
@@ -72,34 +71,44 @@ class _LoginViewState extends State<LoginView> {
               RoundButton(
                   title: "Login",
                   onPressed: () {
-                    btnLogin();
-                    
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const OnBoardingView(),
+                      ),
+                    );
+                    // btnLogin();
                   }),
               const SizedBox(
                 height: 4,
               ),
               TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ResetPasswordView(),
-                    ),
-                  );
-                },
-                child: Text(
-                  "Forgot your password?",
-                  style: TextStyle(
-                      color: TColor.secondaryText,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500),
-                ),
-              ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ResetPasswordView(),
+                      ),
+                    );
+                  },
+                  child: RichText(
+                      text: TextSpan(
+                          text: "Forgot your password? ",
+                          style: TextStyle(color: TColor.secondaryText),
+                          children: [
+                        TextSpan(
+                          text: 'Click here!',
+                          style: TextStyle(
+                              color: TColor.primary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ]))),
               const SizedBox(
-                height: 30,
+                height: 20,
               ),
               Text(
-                "or Login With",
+                "--------------- OR --------------",
                 style: TextStyle(
                     color: TColor.secondaryText,
                     fontSize: 14,
@@ -124,7 +133,7 @@ class _LoginViewState extends State<LoginView> {
                 onPressed: () {},
               ),
               const SizedBox(
-                height: 80,
+                height: 60,
               ),
               TextButton(
                 onPressed: () {
@@ -176,7 +185,11 @@ class _LoginViewState extends State<LoginView> {
 
     endEditing();
 
-    serviceCallLogin({"email": txtEmail.text, "password": txtPassword.text, "push_token": "" });
+    serviceCallLogin({
+      "email": txtEmail.text,
+      "password": txtPassword.text,
+      "push_token": ""
+    });
   }
 
   //TODO: ServiceCall
@@ -188,13 +201,15 @@ class _LoginViewState extends State<LoginView> {
         withSuccess: (responseObj) async {
       Globs.hideHUD();
       if (responseObj[KKey.status] == "1") {
-        
-        Globs.udSet( responseObj[KKey.payload] as Map? ?? {} , Globs.userPayload);
+        Globs.udSet(responseObj[KKey.payload] as Map? ?? {}, Globs.userPayload);
         Globs.udBoolSet(true, Globs.userLogin);
 
-          Navigator.pushAndRemoveUntil(context,  MaterialPageRoute(
-            builder: (context) => const OnBoardingView(),
-          ), (route) => false);
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const OnBoardingView(),
+            ),
+            (route) => false);
       } else {
         mdShowAlert(Globs.appName,
             responseObj[KKey.message] as String? ?? MSG.fail, () {});

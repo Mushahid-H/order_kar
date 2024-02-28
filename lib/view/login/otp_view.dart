@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:food_delivery/common/color_extension.dart';
-import 'package:food_delivery/common/extension.dart';
-import 'package:food_delivery/common_widget/round_button.dart';
-import 'package:food_delivery/view/login/new_password_view.dart';
+import 'package:orderkar/common/color_extension.dart';
+import 'package:orderkar/common/extension.dart';
+import 'package:orderkar/common_widget/round_button.dart';
+import 'package:orderkar/view/login/new_password_view.dart';
 import 'package:otp_pin_field/otp_pin_field.dart';
 
 import '../../common/globs.dart';
@@ -54,8 +54,9 @@ class _OTPViewState extends State<OTPView> {
               const SizedBox(
                 height: 60,
               ),
-
-              SizedBox(height: 60, child: OtpPinField(
+              SizedBox(
+                height: 60,
+                child: OtpPinField(
                     key: _otpPinFieldController,
                     autoFillEnable: true,
 
@@ -67,6 +68,7 @@ class _OTPViewState extends State<OTPView> {
                     onSubmit: (newCode) {
                       code = newCode;
                       btnSubmit();
+
                       /// return the entered pin
                     },
                     onChange: (newCode) {
@@ -77,7 +79,6 @@ class _OTPViewState extends State<OTPView> {
                     onCodeChanged: (newCode) {
                       code = newCode;
                     },
-
                     fieldWidth: 40,
 
                     /// to decorate your Otp_Pin_Field
@@ -126,9 +127,8 @@ class _OTPViewState extends State<OTPView> {
                     /// predefine decorate of pinField use  OtpPinFieldDecoration.defaultPinBoxDecoration||OtpPinFieldDecoration.underlinedPinBoxDecoration||OtpPinFieldDecoration.roundedPinBoxDecoration
                     ///use OtpPinFieldDecoration.custom  (by using this you can make Otp_Pin_Field according to yourself like you can give fieldBorderRadius,fieldBorderWidth and etc things)
                     otpPinFieldDecoration:
-                        OtpPinFieldDecoration.defaultPinBoxDecoration),),
-
-              
+                        OtpPinFieldDecoration.defaultPinBoxDecoration),
+              ),
               const SizedBox(
                 height: 30,
               ),
@@ -137,9 +137,9 @@ class _OTPViewState extends State<OTPView> {
                   onPressed: () {
                     btnSubmit();
                   }),
-                TextButton(
+              TextButton(
                 onPressed: () {
-                   serviceCallForgotRequest({"email": widget.email});
+                  serviceCallForgotRequest({"email": widget.email});
                 },
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -168,7 +168,7 @@ class _OTPViewState extends State<OTPView> {
     );
   }
 
-   //TODO: Action
+  //TODO: Action
   void btnSubmit() {
     if (code.length != 6) {
       mdShowAlert(Globs.appName, MSG.enterCode, () {});
@@ -193,7 +193,9 @@ class _OTPViewState extends State<OTPView> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => NewPasswordView(nObj: payloadObj,)));
+                builder: (context) => NewPasswordView(
+                      nObj: payloadObj,
+                    )));
       } else {
         mdShowAlert(Globs.appName,
             responseObj[KKey.message] as String? ?? MSG.fail, () {});
@@ -211,9 +213,7 @@ class _OTPViewState extends State<OTPView> {
         withSuccess: (responseObj) async {
       Globs.hideHUD();
       if (responseObj[KKey.status] == "1") {
-         mdShowAlert(Globs.appName,
-            "reset code successfully", () {});
-       
+        mdShowAlert(Globs.appName, "reset code successfully", () {});
       } else {
         mdShowAlert(Globs.appName,
             responseObj[KKey.message] as String? ?? MSG.fail, () {});
