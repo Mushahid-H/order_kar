@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:orderkar/common/color_extension.dart';
 import 'package:orderkar/common_widget/round_button.dart';
 
-import 'change_address_view.dart';
+// import 'change_address_view.dart';
 import 'checkout_message_view.dart';
 
 class CheckoutView extends StatefulWidget {
@@ -90,24 +90,24 @@ class _CheckoutViewState extends State<CheckoutView> {
                         const SizedBox(
                           width: 4,
                         ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ChangeAddressView()),
-                            );
-                          },
-                          child: Text(
-                            "Change",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: TColor.primary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700),
-                          ),
-                        )
+                        // TextButton(
+                        //   onPressed: () {
+                        //     Navigator.push(
+                        //       context,
+                        //       MaterialPageRoute(
+                        //           builder: (context) =>
+                        //               const ChangeAddressView()),
+                        //     );
+                        //   },
+                        //   child: Text(
+                        //     "Change",
+                        //     textAlign: TextAlign.center,
+                        //     style: TextStyle(
+                        //         color: TColor.primary,
+                        //         fontSize: 13,
+                        //         fontWeight: FontWeight.w700),
+                        //   ),
+                        // )
                       ],
                     ),
                   ],

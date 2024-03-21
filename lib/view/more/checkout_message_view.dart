@@ -77,9 +77,11 @@ class _CheckoutMessageViewState extends State<CheckoutMessageView> {
           const SizedBox(
             height: 35,
           ),
-          RoundButton(title: "Track My Order", onPressed: () {}),
+          // RoundButton(title: "Track My Order", onPressed: () {}),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pop(context);
+            },
             child: Text(
               "Back To Home",
               textAlign: TextAlign.center,

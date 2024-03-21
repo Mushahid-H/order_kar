@@ -28,10 +28,13 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              const SizedBox(
+                height: 64,
+              ),
               Image.asset(
-                'assets/img/orderkar_logo.png',
-                width: media.width * 0.65,
-                height: media.width * 0.45,
+                'assets/img/orderkar_Logo.png',
+                // width: media.width * 0.65,
+                height: media.width * 0.5,
                 fit: BoxFit.contain,
               ),
               const SizedBox(
@@ -69,7 +72,18 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
               RoundButton(
                   title: "Send",
                   onPressed: () {
-                    btnSubmit();
+                    // btnSubmit();
+
+// delete it later
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const NewPasswordView(nObj: {
+                                'id': '1',
+                                'reset_code': '12234',
+                                'new_password': '3456678'
+                              })),
+                    );
                   }),
             ],
           ),

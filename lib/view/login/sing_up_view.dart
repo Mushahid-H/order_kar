@@ -41,7 +41,7 @@ class _SignUpViewState extends State<SignUpView> {
                 height: 22,
               ),
               Image.asset(
-                "assets/img/orderkar_logo.png",
+                "assets/img/orderkar_Logo.png",
                 width: media.width * 0.65,
                 height: media.width * 0.45,
                 fit: BoxFit.contain,

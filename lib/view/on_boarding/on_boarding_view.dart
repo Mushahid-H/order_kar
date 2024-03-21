@@ -26,12 +26,12 @@ class _OnBoardingViewState extends State<OnBoardingView> {
       "subtitle": "Fast food delivery to your home, office\n wherever you are",
       "image": "assets/img/on_boarding_2.png",
     },
-    {
-      "title": "Live Tracking",
-      "subtitle":
-          "Real time tracking of your food on the app\nonce you placed the order",
-      "image": "assets/img/on_boarding_3.png",
-    },
+    // {
+    //   "title": "Live Tracking",
+    //   "subtitle":
+    //       "Real time tracking of your food on the app\nonce you placed the order",
+    //   "image": "assets/img/on_boarding_3.png",
+    // },
   ];
 
   @override

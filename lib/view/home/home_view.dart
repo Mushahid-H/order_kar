@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:orderkar/common/color_extension.dart';
 import 'package:orderkar/common_widget/round_textfield.dart';
+import 'package:orderkar/common_widget/viewAllItems.dart';
+import 'package:orderkar/view/menu/menu_items_view.dart';
+import 'package:orderkar/view/menu/menu_view.dart';
 
 import '../../common/globs.dart';
 import '../../common/service_call.dart';
@@ -21,12 +24,12 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   TextEditingController txtSearch = TextEditingController();
 
-  List catArr = [
-    {"image": "assets/img/cat_offer.png", "name": "Offers"},
-    {"image": "assets/img/cat_sri.png", "name": "Sri Lankan"},
-    {"image": "assets/img/cat_3.png", "name": "Italian"},
-    {"image": "assets/img/cat_4.png", "name": "Indian"},
-  ];
+  // List catArr = [
+  //   {"image": "assets/img/cat_offer.png", "name": "Offers"},
+  //   {"image": "assets/img/cat_sri.png", "name": "Sri Lankan"},
+  //   {"image": "assets/img/cat_3.png", "name": "Italian"},
+  //   {"image": "assets/img/cat_4.png", "name": "Indian"},
+  // ];
 
   List popArr = [
     {
@@ -53,11 +56,8 @@ class _HomeViewState extends State<HomeView> {
       "type": "Cafa",
       "food_type": "Western Food"
     },
-  ];
-
-  List mostPopArr = [
     {
-      "image": "assets/img/m_res_1.png",
+      "image": "assets/img/res_1.png",
       "name": "Minute by tuk tuk",
       "rate": "4.9",
       "rating": "124",
@@ -65,14 +65,41 @@ class _HomeViewState extends State<HomeView> {
       "food_type": "Western Food"
     },
     {
-      "image": "assets/img/m_res_2.png",
+      "image": "assets/img/res_2.png",
       "name": "Café de Noir",
       "rate": "4.9",
       "rating": "124",
       "type": "Cafa",
       "food_type": "Western Food"
     },
+    {
+      "image": "assets/img/res_3.png",
+      "name": "Bakes by Tella",
+      "rate": "4.9",
+      "rating": "124",
+      "type": "Cafa",
+      "food_type": "Western Food"
+    },
   ];
+
+  // List mostPopArr = [
+  //   {
+  //     "image": "assets/img/m_res_1.png",
+  //     "name": "Minute by tuk tuk",
+  //     "rate": "4.9",
+  //     "rating": "124",
+  //     "type": "Cafa",
+  //     "food_type": "Western Food"
+  //   },
+  //   {
+  //     "image": "assets/img/m_res_2.png",
+  //     "name": "Café de Noir",
+  //     "rate": "4.9",
+  //     "rating": "124",
+  //     "type": "Cafa",
+  //     "food_type": "Western Food"
+  //   },
+  // ];
 
   List recentArr = [
     {
@@ -169,11 +196,11 @@ class _HomeViewState extends State<HomeView> {
                         const SizedBox(
                           width: 25,
                         ),
-                        Image.asset(
-                          "assets/img/dropdown.png",
-                          width: 12,
-                          height: 12,
-                        )
+                        // Image.asset(
+                        //   "assets/img/dropdown.png",
+                        //   width: 12,
+                        //   height: 12,
+                        // )
                       ],
                     )
                   ],
@@ -185,7 +212,7 @@ class _HomeViewState extends State<HomeView> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: RoundTextfield(
-                  hintText: "Search Food",
+                  hintText: "Search Restaurant",
                   controller: txtSearch,
                   left: Container(
                     alignment: Alignment.center,
@@ -196,68 +223,106 @@ class _HomeViewState extends State<HomeView> {
                       height: 20,
                     ),
                   ),
+                  // onChanged: (txtSearch) {
+                  //   if (popArr.contains(txtSearch)) {
+                  //     ListView.builder(
+                  //       physics: const NeverScrollableScrollPhysics(),
+                  //       shrinkWrap: true,
+                  //       padding: EdgeInsets.zero,
+                  //       itemCount: popArr.length,
+                  //       itemBuilder: ((context, index) {
+                  //         var pObj = popArr[index] as Map? ?? {};
+                  //         return PopularRestaurantRow(
+                  //           pObj: pObj,
+                  //           onTap: () {},
+                  //         );
+                  //       }),
+                  //     );
+                  //   }
+                  // },
                 ),
               ),
               const SizedBox(
                 height: 30,
               ),
-              SizedBox(
-                height: 120,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  itemCount: catArr.length,
-                  itemBuilder: ((context, index) {
-                    var cObj = catArr[index] as Map? ?? {};
-                    return CategoryCell(
-                      cObj: cObj,
-                      onTap: () {},
-                    );
-                  }),
-                ),
-              ),
+              // SizedBox(
+              //   height: 60,
+              // child: ListView.builder(
+              //   scrollDirection: Axis.horizontal,
+              //   padding: const EdgeInsets.symmetric(horizontal: 15),
+              //   itemCount: catArr.length,
+              //   itemBuilder: ((context, index) {
+              //     var cObj = catArr[index] as Map? ?? {};
+              //     return CategoryCell(
+              //       cObj: cObj,
+              //       onTap: () {},
+              //     );
+              //   }),
+              // ),
+              // ),
+
+// Popular restaurant
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ViewAllTitleRow(
                   title: "Popular Restaurants",
-                  onView: () {},
+                  onView: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ViewAllItems(
+                                title: "Popular Restaurants", popArr: popArr)));
+                  },
                 ),
               ),
               ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 padding: EdgeInsets.zero,
-                itemCount: popArr.length,
+                itemCount: 3,
                 itemBuilder: ((context, index) {
                   var pObj = popArr[index] as Map? ?? {};
                   return PopularRestaurantRow(
                     pObj: pObj,
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MenuItemsView(
+                                    mObj: pObj,
+                                    tableReserve: true,
+                                  )));
+                    },
                   );
                 }),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: ViewAllTitleRow(
-                  title: "Most Popular",
-                  onView: () {},
-                ),
-              ),
-              SizedBox(
-                height: 200,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  itemCount: mostPopArr.length,
-                  itemBuilder: ((context, index) {
-                    var mObj = mostPopArr[index] as Map? ?? {};
-                    return MostPopularCell(
-                      mObj: mObj,
-                      onTap: () {},
-                    );
-                  }),
-                ),
-              ),
+
+// Most popular restaurant
+
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(horizontal: 20),
+              //   child: ViewAllTitleRow(
+              //     title: "Most Popular",
+              //     onView: () {},
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: 200,
+              //   child: ListView.builder(
+              //     scrollDirection: Axis.horizontal,
+              //     padding: const EdgeInsets.symmetric(horizontal: 15),
+              //     itemCount: mostPopArr.length,
+              //     itemBuilder: ((context, index) {
+              //       var mObj = mostPopArr[index] as Map? ?? {};
+              //       return MostPopularCell(
+              //         mObj: mObj,
+              //         onTap: () {},
+              //       );
+              //     }),
+              //   ),
+              // ),
+
+              // RECENT purchased ITEMS
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ViewAllTitleRow(

@@ -8,7 +8,9 @@ import 'item_details_view.dart';
 
 class MenuItemsView extends StatefulWidget {
   final Map mObj;
-  const MenuItemsView({super.key, required this.mObj});
+  final bool tableReserve;
+  const MenuItemsView(
+      {super.key, required this.mObj, this.tableReserve = false});
 
   @override
   State<MenuItemsView> createState() => _MenuItemsViewState();
@@ -31,7 +33,7 @@ class _MenuItemsViewState extends State<MenuItemsView> {
       "name": "Dark Chocolate Cake",
       "rate": "4.9",
       "rating": "124",
-      "type": "Cakes by Tella",
+      "type": "Café de Noir",
       "food_type": "Desserts"
     },
     {
@@ -39,7 +41,7 @@ class _MenuItemsViewState extends State<MenuItemsView> {
       "name": "Street Shake",
       "rate": "4.9",
       "rating": "124",
-      "type": "Café Racer",
+      "type": "Bakes by Tella",
       "food_type": "Desserts"
     },
     {
@@ -63,7 +65,7 @@ class _MenuItemsViewState extends State<MenuItemsView> {
       "name": "Dark Chocolate Cake",
       "rate": "4.9",
       "rating": "124",
-      "type": "Cakes by Tella",
+      "type": "Café de Noir",
       "food_type": "Desserts"
     },
     {
@@ -71,7 +73,7 @@ class _MenuItemsViewState extends State<MenuItemsView> {
       "name": "Street Shake",
       "rate": "4.9",
       "rating": "124",
-      "type": "Café Racer",
+      "type": "Bakes by Tella",
       "food_type": "Desserts"
     },
     {
@@ -79,13 +81,21 @@ class _MenuItemsViewState extends State<MenuItemsView> {
       "name": "Fudgy Chewy Brownies",
       "rate": "4.9",
       "rating": "124",
-      "type": "Minute by tuk tuk",
+      "type": "Café de Noir",
       "food_type": "Desserts"
     },
   ];
 
   @override
   Widget build(BuildContext context) {
+    List<Map<dynamic, dynamic>> mObjList = [];
+
+    for (var item in menuItemsArr) {
+      if (item is Map && item.containsValue(widget.mObj["name"])) {
+        mObjList.add(item);
+      }
+    }
+    print("mObjList.length: ${mObjList.length}");
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -156,15 +166,47 @@ class _MenuItemsViewState extends State<MenuItemsView> {
               const SizedBox(
                 height: 15,
               ),
+              if (widget.tableReserve)
+                Column(
+                  children: [
+                    Text(
+                      "Table Reservation",
+                      style: TextStyle(
+                          color: TColor.primaryText,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800),
+                    ),
+                    InkWell(
+                      onTap: () => {},
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: TColor.primary,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        height: 50,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Icon(
+                          Icons.table_restaurant_sharp,
+                          color: TColor.white,
+                          size: 40,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              const SizedBox(
+                height: 15,
+              ),
               ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 padding: EdgeInsets.zero,
-                itemCount: menuItemsArr.length,
+                itemCount: mObjList.length,
                 itemBuilder: ((context, index) {
-                  var mObj = menuItemsArr[index] as Map? ?? {};
+                  // var mObj = menuItemsArr[index] as Map? ?? {};
                   return MenuItemRow(
-                    mObj: mObj,
+                    mObj: mObjList[index],
                     onTap: () {
                       Navigator.push(
                         context,

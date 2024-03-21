@@ -3,6 +3,7 @@ import 'package:orderkar/common/color_extension.dart';
 import 'package:orderkar/common/extension.dart';
 import 'package:orderkar/common_widget/round_button.dart';
 import 'package:orderkar/view/login/login_view.dart';
+import 'package:orderkar/view/login/otp_view.dart';
 import '../../common/globs.dart';
 import '../../common/service_call.dart';
 import '../../common_widget/round_textfield.dart';
@@ -21,6 +22,7 @@ class _NewPasswordViewState extends State<NewPasswordView> {
 
   @override
   Widget build(BuildContext context) {
+    final media = MediaQuery.of(context).size;
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -28,6 +30,13 @@ class _NewPasswordViewState extends State<NewPasswordView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              const SizedBox(
+                height: 64,
+              ),
+              Image.asset(
+                'assets/img/orderkar_Logo.png',
+                height: media.width * .5,
+              ),
               const SizedBox(
                 height: 64,
               ),
@@ -70,7 +79,15 @@ class _NewPasswordViewState extends State<NewPasswordView> {
               RoundButton(
                   title: "Next",
                   onPressed: () {
-                    btnSubmit();
+                    // btnSubmit();
+// delete this later, its just for presentation
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const OTPView(
+                                email: 'abc@gmail.com',
+                              )),
+                    );
                   }),
             ],
           ),
