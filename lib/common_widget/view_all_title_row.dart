@@ -5,7 +5,7 @@ import '../common/color_extension.dart';
 class ViewAllTitleRow extends StatelessWidget {
   final String title;
   final VoidCallback onView;
-  const ViewAllTitleRow({super.key, required this.title, required this.onView });
+  const ViewAllTitleRow({super.key, required this.title, required this.onView});
 
   @override
   Widget build(BuildContext context) {

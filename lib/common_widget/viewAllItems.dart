@@ -1,11 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:orderkar/common_widget/popular_resutaurant_row.dart';
+import 'package:orderkar/common_widget/round_textfield.dart';
 import 'package:orderkar/view/menu/menu_items_view.dart';
 
-class ViewAllItems extends StatelessWidget {
+class ViewAllItems extends StatefulWidget {
+  final List<Map<String, dynamic>> popArr;
   final String title;
-  final List popArr;
   const ViewAllItems({super.key, required this.title, required this.popArr});
+
+  @override
+  State<ViewAllItems> createState() => _ViewAllItemsState();
+}
+
+class _ViewAllItemsState extends State<ViewAllItems> {
+  TextEditingController txtSearch = TextEditingController();
+
+  List<Map<String, dynamic>> _searchResult = [];
+
+  @override
+  void initState() {
+    _searchResult = widget.popArr;
+    super.initState();
+  }
+
+  void search(String query) {
+    List<Map<String, dynamic>> searchList = [];
+
+    if (query.isEmpty) {
+      searchList = widget.popArr;
+    } else {
+      searchList = widget.popArr.where((element) {
+        return element["name"].toLowerCase().contains(query.toLowerCase());
+      }).toList();
+    }
+
+    setState(() {
+      _searchResult = searchList;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +49,7 @@ class ViewAllItems extends StatelessWidget {
               height: 30,
             ),
             Text(
-              title,
+              widget.title,
               style: const TextStyle(
                   color: Colors.black,
                   fontSize: 20,
@@ -33,13 +65,30 @@ class ViewAllItems extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: RoundTextfield(
+                hintText: "Search Restaurant",
+                controller: txtSearch,
+                left: Container(
+                  alignment: Alignment.center,
+                  width: 30,
+                  child: Image.asset(
+                    "assets/img/search.png",
+                    width: 20,
+                    height: 20,
+                  ),
+                ),
+                onChanged: (value) => search(value),
+              ),
+            ),
             ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               padding: EdgeInsets.zero,
-              itemCount: popArr.length,
+              itemCount: _searchResult.length,
               itemBuilder: ((context, index) {
-                var pObj = popArr[index] as Map? ?? {};
+                var pObj = _searchResult[index] as Map? ?? {};
                 return PopularRestaurantRow(
                   pObj: pObj,
                   onTap: () {

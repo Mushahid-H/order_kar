@@ -16,8 +16,29 @@ class MenuItemRow extends StatelessWidget {
         child: Stack(
           alignment: Alignment.bottomLeft,
           children: [
-            Image.asset(
+            Image.network(
               mObj["image"].toString(),
+              loadingBuilder: (BuildContext context, Widget child,
+                  ImageChunkEvent? loadingProgress) {
+                if (loadingProgress == null) {
+                  // Image is fully loaded
+                  return child;
+                } else {
+                  // Image is still loading, show loading widget
+                  return Container(
+                    width: double.maxFinite,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      color: TColor.placeholder,
+                    ),
+                  );
+                }
+              },
+              errorBuilder:
+                  (BuildContext context, Object error, StackTrace? stackTrace) {
+                // Image failed to load, show error message
+                return const Text('Failed to load image');
+              },
               width: double.maxFinite,
               height: 200,
               fit: BoxFit.cover,
@@ -64,7 +85,7 @@ class MenuItemRow extends StatelessWidget {
                             width: 4,
                           ),
                           Text(
-                            mObj["rate"],
+                            mObj["rate"].toString(),
                             textAlign: TextAlign.center,
                             style:
                                 TextStyle(color: TColor.primary, fontSize: 11),
@@ -73,7 +94,7 @@ class MenuItemRow extends StatelessWidget {
                             width: 8,
                           ),
                           Text(
-                            mObj["type"],
+                            mObj["type"].toString(),
                             textAlign: TextAlign.center,
                             style: TextStyle(color: TColor.white, fontSize: 11),
                           ),
@@ -84,7 +105,7 @@ class MenuItemRow extends StatelessWidget {
                                 TextStyle(color: TColor.primary, fontSize: 11),
                           ),
                           Text(
-                            mObj["food_type"],
+                            mObj["food_type"].toString(),
                             textAlign: TextAlign.center,
                             style: TextStyle(color: TColor.white, fontSize: 12),
                           ),

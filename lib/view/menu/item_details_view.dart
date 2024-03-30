@@ -6,7 +6,8 @@ import '../../common/color_extension.dart';
 import '../more/my_order_view.dart';
 
 class ItemDetailsView extends StatefulWidget {
-  const ItemDetailsView({super.key});
+  final iobj;
+  const ItemDetailsView({super.key, this.iobj});
 
   @override
   State<ItemDetailsView> createState() => _ItemDetailsViewState();
@@ -106,9 +107,7 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                                               Icons.star,
                                               color: TColor.primary,
                                             ),
-                                            onRatingUpdate: (rating) {
-                                              print(rating);
-                                            },
+                                            onRatingUpdate: (rating) {},
                                           ),
                                         ),
                                         const SizedBox(

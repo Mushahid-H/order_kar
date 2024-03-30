@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "526131538192",
+    "project_id": "orderkar-e74b2",
+    "storage_bucket": "orderkar-e74b2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:526131538192:android:844a2222f609825b871d95",
+        "android_client_info": {
+          "package_name": "com.order_kar.orderkar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-LtCzYiPYwuyWA56ZlSWlLGvz09MJwdc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

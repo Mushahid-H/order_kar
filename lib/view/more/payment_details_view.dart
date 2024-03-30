@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
 import 'package:orderkar/common/color_extension.dart';
+import 'package:orderkar/common/extension.dart';
+import 'package:orderkar/common/globs.dart';
 import 'package:orderkar/common_widget/round_icon_button.dart';
 import 'package:orderkar/view/more/add_card_view.dart';
-
-import '../../common_widget/round_button.dart';
 import 'my_order_view.dart';
 
 class PaymentDetailsView extends StatefulWidget {
@@ -14,12 +16,32 @@ class PaymentDetailsView extends StatefulWidget {
 }
 
 class _PaymentDetailsViewState extends State<PaymentDetailsView> {
-  List cardArr = [
-    {
-      "icon": "assets/img/visa_icon.png",
-      "card": "**** **** **** 2187",
+  List cardArr = [];
+
+  void getCardData() async {
+    try {
+      cardArr.clear();
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc('card_info')
+          .get();
+      if (userDoc.exists) {
+        setState(() {
+          cardArr.add(userDoc.data() as Map<String, dynamic>);
+        });
+      } else {
+        mdShowAlert(Globs.appName, "No data found", () {});
+      }
+    } catch (e) {
+      mdShowAlert(Globs.appName, "Error Occured", () {});
     }
-  ];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getCardData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +133,7 @@ class _PaymentDetailsViewState extends State<PaymentDetailsView> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "Cash/Card On Delivery",
+                            "Cash On Delivery",
                             style: TextStyle(
                                 color: TColor.primaryText,
                                 fontSize: 12,
@@ -139,13 +161,14 @@ class _PaymentDetailsViewState extends State<PaymentDetailsView> {
                       itemCount: cardArr.length,
                       itemBuilder: ((context, index) {
                         var cObj = cardArr[index] as Map? ?? {};
+
                         return Container(
                           margin: const EdgeInsets.symmetric(
                               vertical: 15, horizontal: 35),
                           child: Row(
                             children: [
                               Image.asset(
-                                cObj["icon"].toString(),
+                                "assets/img/visa_icon.png",
                                 width: 50,
                                 height: 35,
                                 fit: BoxFit.contain,
@@ -155,7 +178,7 @@ class _PaymentDetailsViewState extends State<PaymentDetailsView> {
                               ),
                               Expanded(
                                 child: Text(
-                                  cObj["card"].toString(),
+                                  cObj["card_number"].toString(),
                                   style: TextStyle(
                                       color: TColor.secondaryText,
                                       fontSize: 12,
@@ -165,11 +188,30 @@ class _PaymentDetailsViewState extends State<PaymentDetailsView> {
                               SizedBox(
                                 width: 100,
                                 height: 28,
-                                child: RoundButton(
-                                  title: 'Delete Card',
-                                  fontSize: 12,
-                                  onPressed: () {},
-                                  type: RoundButtonType.textPrimary,
+                                child: OutlinedButton(
+                                  onPressed: cObj["delete_anytime"]
+                                      ? () {
+                                          deleteCard();
+                                          setState(() {
+                                            cardArr.removeAt(index);
+                                          });
+                                        }
+                                      : null,
+
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: cObj["delete_anytime"]
+                                        ? TColor.primary
+                                        : TColor.secondaryText,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Delete Card',
+                                    style: TextStyle(fontSize: 8),
+                                  ),
+
+                                  // how to set button active
                                 ),
                               )
                             ],
@@ -212,7 +254,7 @@ class _PaymentDetailsViewState extends State<PaymentDetailsView> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25),
                 child: RoundIconButton(
-                    title: "Add Another Credit/Debit Card",
+                    title: "Add Credit/Debit Card",
                     icon: "assets/img/add.png",
                     color: TColor.primary,
                     fontSize: 16,
@@ -222,9 +264,8 @@ class _PaymentDetailsViewState extends State<PaymentDetailsView> {
                           backgroundColor: Colors.transparent,
                           context: context,
                           builder: (context) {
-                            return const AddCardView();
+                            return AddCardView(onCardAdded: getCardData);
                           });
-                      // Navigator.push(context, MaterialPageRoute(builder: (context) => const AddCardView() ));
                     }),
               ),
               const SizedBox(
@@ -235,5 +276,26 @@ class _PaymentDetailsViewState extends State<PaymentDetailsView> {
         ),
       ),
     );
+  }
+
+  Future<void> deleteCard() async {
+    try {
+      // Get a reference to the Firestore collection
+      CollectionReference cardsRef =
+          FirebaseFirestore.instance.collection('users');
+
+      // Get a reference to the specific document
+      DocumentReference cardDocRef = cardsRef.doc("card_info");
+
+      // Delete the document
+      await cardDocRef.delete();
+      mdShowAlert(Globs.appName, MSG.success, () {
+        setState(() {});
+      });
+    } catch (e) {
+      mdShowAlert(Globs.appName, MSG.fail, () {
+        setState(() {});
+      });
+    }
   }
 }

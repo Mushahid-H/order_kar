@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
 import '../../common/color_extension.dart';
@@ -17,22 +19,22 @@ class _MenuViewState extends State<MenuView> {
     {
       "name": "Food",
       "image": "assets/img/menu_1.png",
-      "items_count": "120",
     },
     {
       "name": "Beverages",
       "image": "assets/img/menu_2.png",
-      "items_count": "220",
     },
     {
       "name": "Desserts",
       "image": "assets/img/menu_3.png",
-      "items_count": "155",
+    },
+    {
+      "name": "Pizza",
+      "image": "assets/img/menu_4.png",
     },
     {
       "name": "Promotions",
       "image": "assets/img/menu_4.png",
-      "items_count": "25",
     },
   ];
   TextEditingController txtSearch = TextEditingController();
@@ -94,22 +96,23 @@ class _MenuViewState extends State<MenuView> {
                   const SizedBox(
                     height: 20,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: RoundTextfield(
-                      hintText: "Search Food",
-                      controller: txtSearch,
-                      left: Container(
-                        alignment: Alignment.center,
-                        width: 30,
-                        child: Image.asset(
-                          "assets/img/search.png",
-                          width: 20,
-                          height: 20,
-                        ),
-                      ),
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(horizontal: 20),
+                  //   child: RoundTextfield(
+                  //     hintText: "Search Food",
+                  //     controller: txtSearch,
+                  //     left: Container(
+                  //       alignment: Alignment.center,
+                  //       width: 30,
+                  //       child: Image.asset(
+                  //         "assets/img/search.png",
+                  //         width: 20,
+                  //         height: 20,
+                  //       ),
+                  //     ),
+                  //       onChanged: (value) {},
+                  //   ),
+                  // ),
                   const SizedBox(
                     height: 30,
                   ),
@@ -137,7 +140,7 @@ class _MenuViewState extends State<MenuView> {
                             children: [
                               Container(
                                 margin: const EdgeInsets.only(
-                                    top: 8, bottom: 8, right: 20),
+                                    top: 12, bottom: 8, right: 20),
                                 width: media.width - 100,
                                 height: 90,
                                 decoration: const BoxDecoration(
@@ -182,12 +185,12 @@ class _MenuViewState extends State<MenuView> {
                                         const SizedBox(
                                           height: 4,
                                         ),
-                                        Text(
-                                          "${mObj["items_count"].toString()} items",
-                                          style: TextStyle(
-                                              color: TColor.secondaryText,
-                                              fontSize: 11),
-                                        ),
+                                        // Text(
+                                        //   "${} items",
+                                        //   style: TextStyle(
+                                        //       color: TColor.secondaryText,
+                                        //       fontSize: 11),
+                                        // ),
                                       ],
                                     ),
                                   ),

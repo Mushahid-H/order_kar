@@ -1,10 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:orderkar/common/color_extension.dart';
 import 'package:orderkar/common/extension.dart';
 import 'package:orderkar/common_widget/round_button.dart';
-import 'package:orderkar/view/login/otp_view.dart';
+
 import '../../common/globs.dart';
-import '../../common/service_call.dart';
+
 import '../../common_widget/round_textfield.dart';
 import 'new_password_view.dart';
 
@@ -17,6 +18,68 @@ class ResetPasswordView extends StatefulWidget {
 
 class _ResetPasswordViewState extends State<ResetPasswordView> {
   TextEditingController txtEmail = TextEditingController();
+
+// reset functionality
+
+  Future<void> _resetPassword() async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(
+        email: txtEmail.text,
+      );
+
+      // Show a success message to the user
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(
+              "Email Sent",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            content:
+                const Text("Please check your email to reset your password."),
+            actions: <Widget>[
+              TextButton(
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      // Handle password reset errors
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(
+              "Password Reset Failed",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            content: Text("$e"),
+            actions: <Widget>[
+              TextButton(
+                child: const Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+// main
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +136,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                   title: "Send",
                   onPressed: () {
                     // btnSubmit();
-
+                    _resetPassword();
 // delete it later
                     Navigator.push(
                       context,
@@ -92,7 +155,7 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
     );
   }
 
-  //TODO: Action
+  // Action
   void btnSubmit() {
     if (!txtEmail.text.isEmail) {
       mdShowAlert(Globs.appName, MSG.enterEmail, () {});
@@ -101,29 +164,29 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
 
     endEditing();
 
-    serviceCallForgotRequest({"email": txtEmail.text});
+    // serviceCallForgotRequest({"email": txtEmail.text});
   }
 
-  //TODO: ServiceCall
+  // ServiceCall
 
-  void serviceCallForgotRequest(Map<String, dynamic> parameter) {
-    Globs.showHUD();
+  // void serviceCallForgotRequest(Map<String, dynamic> parameter) {
+  //   Globs.showHUD();
 
-    ServiceCall.post(parameter, SVKey.svForgotPasswordRequest,
-        withSuccess: (responseObj) async {
-      Globs.hideHUD();
-      if (responseObj[KKey.status] == "1") {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => OTPView(email: txtEmail.text)));
-      } else {
-        mdShowAlert(Globs.appName,
-            responseObj[KKey.message] as String? ?? MSG.fail, () {});
-      }
-    }, failure: (err) async {
-      Globs.hideHUD();
-      mdShowAlert(Globs.appName, err.toString(), () {});
-    });
-  }
+  //   ServiceCall.post(parameter, SVKey.svForgotPasswordRequest,
+  //       withSuccess: (responseObj) async {
+  //     Globs.hideHUD();
+  //     if (responseObj[KKey.status] == "1") {
+  //       Navigator.push(
+  //           context,
+  //           MaterialPageRoute(
+  //               builder: (context) => OTPView(email: txtEmail.text)));
+  //     } else {
+  //       mdShowAlert(Globs.appName,
+  //           responseObj[KKey.message] as String? ?? MSG.fail, () {});
+  //     }
+  //   }, failure: (err) async {
+  //     Globs.hideHUD();
+  //     mdShowAlert(Globs.appName, err.toString(), () {});
+  //   });
+  // }
 }

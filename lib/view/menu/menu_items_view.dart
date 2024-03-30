@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:orderkar/common/color_extension.dart';
+import 'package:orderkar/common/extension.dart';
+import 'package:orderkar/common/globs.dart';
 import 'package:orderkar/common_widget/round_textfield.dart';
 
 import '../../common_widget/menu_item_row.dart';
@@ -18,84 +21,85 @@ class MenuItemsView extends StatefulWidget {
 
 class _MenuItemsViewState extends State<MenuItemsView> {
   TextEditingController txtSearch = TextEditingController();
+  List<Map<String, dynamic>> menuItemsArr = [];
+  List<Map<String, dynamic>> mObjList = [];
 
-  List menuItemsArr = [
-    {
-      "image": "assets/img/dess_1.png",
-      "name": "French Apple Pie",
-      "rate": "4.9",
-      "rating": "124",
-      "type": "Minute by tuk tuk",
-      "food_type": "Desserts"
-    },
-    {
-      "image": "assets/img/dess_2.png",
-      "name": "Dark Chocolate Cake",
-      "rate": "4.9",
-      "rating": "124",
-      "type": "Café de Noir",
-      "food_type": "Desserts"
-    },
-    {
-      "image": "assets/img/dess_3.png",
-      "name": "Street Shake",
-      "rate": "4.9",
-      "rating": "124",
-      "type": "Bakes by Tella",
-      "food_type": "Desserts"
-    },
-    {
-      "image": "assets/img/dess_4.png",
-      "name": "Fudgy Chewy Brownies",
-      "rate": "4.9",
-      "rating": "124",
-      "type": "Minute by tuk tuk",
-      "food_type": "Desserts"
-    },
-    {
-      "image": "assets/img/dess_1.png",
-      "name": "French Apple Pie",
-      "rate": "4.9",
-      "rating": "124",
-      "type": "Minute by tuk tuk",
-      "food_type": "Desserts"
-    },
-    {
-      "image": "assets/img/dess_2.png",
-      "name": "Dark Chocolate Cake",
-      "rate": "4.9",
-      "rating": "124",
-      "type": "Café de Noir",
-      "food_type": "Desserts"
-    },
-    {
-      "image": "assets/img/dess_3.png",
-      "name": "Street Shake",
-      "rate": "4.9",
-      "rating": "124",
-      "type": "Bakes by Tella",
-      "food_type": "Desserts"
-    },
-    {
-      "image": "assets/img/dess_4.png",
-      "name": "Fudgy Chewy Brownies",
-      "rate": "4.9",
-      "rating": "124",
-      "type": "Café de Noir",
-      "food_type": "Desserts"
-    },
-  ];
+  List<Map<String, dynamic>> _searchResult = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+    Future.delayed(Duration(seconds: 2), () {
+      setState(() {
+        _searchResult = List.from(mObjList);
+      });
+    });
+  }
+
+// data form collection
+  Future<void> fetchData() async {
+    try {
+      // Get a reference to the collection
+      CollectionReference collectionReference =
+          FirebaseFirestore.instance.collection('restaurants');
+
+      // Get documents from the collection
+      QuerySnapshot querySnapshot = await collectionReference.get();
+
+      // Iterate through each document
+      querySnapshot.docs.forEach((DocumentSnapshot document) {
+        fetchSubcollectionData(document.reference);
+      });
+    } catch (e) {
+      mdShowAlert(Globs.appName, "Error Occured while fetching data", () {});
+    }
+  }
+
+// data from sub collection
+  Future<void> fetchSubcollectionData(DocumentReference documentRef) async {
+    try {
+      // Get a reference to the subcollection
+      CollectionReference subcollectionReference =
+          documentRef.collection('foodItems');
+
+      // Get documents from the subcollection
+      QuerySnapshot subcollectionQuerySnapshot =
+          await subcollectionReference.get();
+
+      // Iterate through each document in the subcollection
+      subcollectionQuerySnapshot.docs.forEach((DocumentSnapshot subDocument) {
+        // Access fields of the subdocument
+        Map<String, dynamic> subData =
+            subDocument.data() as Map<String, dynamic>;
+
+        setState(() {
+          menuItemsArr.add(subData);
+        });
+      });
+    } catch (e) {
+      mdShowAlert(Globs.appName, "Error Occured while fetching data", () {});
+    }
+  }
+
+// search functionality
+  void search(String query) {
+    if (query.isEmpty) {
+      _searchResult = List.from(mObjList);
+    } else {
+      _searchResult.clear();
+      _searchResult = mObjList.where((element) {
+        return element["name"].toLowerCase().contains(query.toLowerCase());
+      }).toList();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<Map<dynamic, dynamic>> mObjList = [];
+    mObjList = menuItemsArr
+        .where((item) => item.containsValue(widget.mObj["name"]))
+        .toList();
 
-    for (var item in menuItemsArr) {
-      if (item is Map && item.containsValue(widget.mObj["name"])) {
-        mObjList.add(item);
-      }
-    }
-    print("mObjList.length: ${mObjList.length}");
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -161,6 +165,7 @@ class _MenuItemsViewState extends State<MenuItemsView> {
                       height: 20,
                     ),
                   ),
+                  onChanged: (value) => search(value),
                 ),
               ),
               const SizedBox(
@@ -202,11 +207,10 @@ class _MenuItemsViewState extends State<MenuItemsView> {
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 padding: EdgeInsets.zero,
-                itemCount: mObjList.length,
+                itemCount: _searchResult.length,
                 itemBuilder: ((context, index) {
-                  // var mObj = menuItemsArr[index] as Map? ?? {};
                   return MenuItemRow(
-                    mObj: mObjList[index],
+                    mObj: _searchResult[index],
                     onTap: () {
                       Navigator.push(
                         context,

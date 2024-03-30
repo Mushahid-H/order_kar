@@ -1,13 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:orderkar/common/color_extension.dart';
 import 'package:orderkar/common/extension.dart';
 import 'package:orderkar/common/globs.dart';
 import 'package:orderkar/common_widget/round_button.dart';
+
 import 'package:orderkar/view/login/rest_password_view.dart';
 import 'package:orderkar/view/login/sing_up_view.dart';
-import 'package:orderkar/view/on_boarding/on_boarding_view.dart';
+import 'package:orderkar/view/main_tabview/main_tabview.dart';
 
-import '../../common/service_call.dart';
 import '../../common_widget/round_icon_button.dart';
 import '../../common_widget/round_textfield.dart';
 
@@ -21,6 +22,27 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   TextEditingController txtEmail = TextEditingController();
   TextEditingController txtPassword = TextEditingController();
+
+  Future<void> _login(String email, String password) async {
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Navigate to the home screen or do any other action upon successful login
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MainTabView()),
+      );
+      Globs.hideHUD();
+    } catch (e) {
+      // Handle login errors
+
+      Globs.hideHUD();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,13 +93,9 @@ class _LoginViewState extends State<LoginView> {
               RoundButton(
                   title: "Login",
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const OnBoardingView(),
-                      ),
-                    );
-                    // btnLogin();
+                    Globs.showHUD();
+                    btnLogin();
+                    _login(txtEmail.text, txtPassword.text);
                   }),
               const SizedBox(
                 height: 4,
@@ -171,7 +189,7 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  //TODO: Action
+  //: Action
   void btnLogin() {
     if (!txtEmail.text.isEmail) {
       mdShowAlert(Globs.appName, MSG.enterEmail, () {});
@@ -184,39 +202,5 @@ class _LoginViewState extends State<LoginView> {
     }
 
     endEditing();
-
-    serviceCallLogin({
-      "email": txtEmail.text,
-      "password": txtPassword.text,
-      "push_token": ""
-    });
-  }
-
-  //TODO: ServiceCall
-
-  void serviceCallLogin(Map<String, dynamic> parameter) {
-    Globs.showHUD();
-
-    ServiceCall.post(parameter, SVKey.svLogin,
-        withSuccess: (responseObj) async {
-      Globs.hideHUD();
-      if (responseObj[KKey.status] == "1") {
-        Globs.udSet(responseObj[KKey.payload] as Map? ?? {}, Globs.userPayload);
-        Globs.udBoolSet(true, Globs.userLogin);
-
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const OnBoardingView(),
-            ),
-            (route) => false);
-      } else {
-        mdShowAlert(Globs.appName,
-            responseObj[KKey.message] as String? ?? MSG.fail, () {});
-      }
-    }, failure: (err) async {
-      Globs.hideHUD();
-      mdShowAlert(Globs.appName, err.toString(), () {});
-    });
   }
 }

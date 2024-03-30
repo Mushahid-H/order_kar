@@ -36,7 +36,7 @@ class _OnBoardingViewState extends State<OnBoardingView> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    //  implement initState
     super.initState();
 
     controller.addListener(() {

@@ -1,28 +1,30 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:orderkar/common/color_extension.dart';
 import 'package:orderkar/common/locator.dart';
-import 'package:orderkar/common/service_call.dart';
+import 'package:orderkar/firebase_options.dart';
+import 'package:orderkar/view/login/login_view.dart';
 import 'package:orderkar/view/login/welcome_view.dart';
 import 'package:orderkar/view/main_tabview/main_tabview.dart';
 import 'package:orderkar/view/on_boarding/startup_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'common/globs.dart';
+// import 'common/globs.dart';
 import 'common/my_http_overrides.dart';
 
 SharedPreferences? prefs;
 void main() async {
   setUpLocator();
   HttpOverrides.global = MyHttpOverrides();
-  WidgetsFlutterBinding.ensureInitialized();
-  prefs = await SharedPreferences.getInstance();
 
-  if (Globs.udValueBool(Globs.userLogin)) {
-    ServiceCall.userPayload = Globs.udValue(Globs.userPayload);
-  }
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(const MyApp(
     defaultHome: StartupView(),
@@ -62,7 +64,7 @@ class _MyAppState extends State<MyApp> {
         fontFamily: "Metropolis",
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
       ),
-      home: widget.defaultHome,
+      home: AuthWrapper(),
       navigatorKey: locator<NavigationService>().navigatorKey,
       onGenerateRoute: (routeSettings) {
         switch (routeSettings.name) {
@@ -80,6 +82,34 @@ class _MyAppState extends State<MyApp> {
       },
       builder: (context, child) {
         return FlutterEasyLoading(child: child);
+      },
+    );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          User? user = snapshot.data;
+          if (user == null) {
+            // User is not logged in
+            return LoginView();
+          } else {
+            // User is logged in
+            return MainTabView();
+          }
+        } else {
+          // Connection state is not active yet
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
       },
     );
   }

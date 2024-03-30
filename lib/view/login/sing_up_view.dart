@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:orderkar/common/color_extension.dart';
 import 'package:orderkar/common/extension.dart';
@@ -10,6 +11,7 @@ import '../../common/globs.dart';
 import '../../common/service_call.dart';
 import '../../common_widget/round_textfield.dart';
 import '../on_boarding/on_boarding_view.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
@@ -25,6 +27,37 @@ class _SignUpViewState extends State<SignUpView> {
   TextEditingController txtEmail = TextEditingController();
   TextEditingController txtPassword = TextEditingController();
   TextEditingController txtConfirmPassword = TextEditingController();
+
+// Function to sign up with email and password and store additional information
+  Future<void> _signUp(String name, String email, String password,
+      String phoneNumber, String address) async {
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Store additional information
+      await FirebaseFirestore.instance.collection('users').doc(email).set({
+        'name': name,
+        'email': email,
+        'address': address,
+        'phoneNumber': phoneNumber,
+      });
+
+      // Navigate to the home screen or do any other action upon successful signup
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginView()),
+      );
+      Globs.hideHUD();
+    } catch (e) {
+      // Handle signup errors
+      mdShowAlert(Globs.appName, e.toString(), () {});
+      Globs.hideHUD();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +138,11 @@ class _SignUpViewState extends State<SignUpView> {
               RoundButton(
                   title: "Sign Up",
                   onPressed: () {
+                    Globs.showHUD();
                     btnSignUp();
+                    _signUp(txtName.text, txtEmail.text, txtPassword.text,
+                        txtMobile.text, txtAddress.text);
+
                     //  Navigator.push(
                     //       context,
                     //       MaterialPageRoute(
@@ -186,42 +223,42 @@ class _SignUpViewState extends State<SignUpView> {
 
     endEditing();
 
-    serviceCallSignUp({
-      "name": txtName.text,
-      "mobile": txtMobile.text,
-      "email": txtEmail.text,
-      "address": txtAddress.text,
-      "password": txtPassword.text,
-      "push_token": "",
-      "device_type": Platform.isAndroid ? "A" : "I"
-    });
+    // serviceCallSignUp({
+    //   "name": txtName.text,
+    //   "mobile": txtMobile.text,
+    //   "email": txtEmail.text,
+    //   "address": txtAddress.text,
+    //   "password": txtPassword.text,
+    //   "push_token": "",
+    //   "device_type": Platform.isAndroid ? "A" : "I"
+    // });
   }
 
   //TODO: ServiceCall
 
-  void serviceCallSignUp(Map<String, dynamic> parameter) {
-    Globs.showHUD();
+  // void serviceCallSignUp(Map<String, dynamic> parameter) {
+  //   Globs.showHUD();
 
-    ServiceCall.post(parameter, SVKey.svSignUp,
-        withSuccess: (responseObj) async {
-      Globs.hideHUD();
-      if (responseObj[KKey.status] == "1") {
-        Globs.udSet(responseObj[KKey.payload] as Map? ?? {}, Globs.userPayload);
-        Globs.udBoolSet(true, Globs.userLogin);
+  //   ServiceCall.post(parameter, SVKey.svSignUp,
+  //       withSuccess: (responseObj) async {
+  //     Globs.hideHUD();
+  //     if (responseObj[KKey.status] == "1") {
+  //       Globs.udSet(responseObj[KKey.payload] as Map? ?? {}, Globs.userPayload);
+  //       Globs.udBoolSet(true, Globs.userLogin);
 
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const OnBoardingView(),
-            ),
-            (route) => false);
-      } else {
-        mdShowAlert(Globs.appName,
-            responseObj[KKey.message] as String? ?? MSG.fail, () {});
-      }
-    }, failure: (err) async {
-      Globs.hideHUD();
-      mdShowAlert(Globs.appName, err.toString(), () {});
-    });
-  }
+  //       Navigator.pushAndRemoveUntil(
+  //           context,
+  //           MaterialPageRoute(
+  //             builder: (context) => const OnBoardingView(),
+  //           ),
+  //           (route) => false);
+  //     } else {
+  //       mdShowAlert(Globs.appName,
+  //           responseObj[KKey.message] as String? ?? MSG.fail, () {});
+  //     }
+  //   }, failure: (err) async {
+  //     Globs.hideHUD();
+  //     mdShowAlert(Globs.appName, err.toString(), () {});
+  //   });
+  // }
 }

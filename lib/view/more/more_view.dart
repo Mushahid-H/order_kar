@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:orderkar/common/globs.dart';
+import 'package:orderkar/view/login/login_view.dart';
 import 'package:orderkar/view/more/about_us_view.dart';
 import 'package:orderkar/view/more/inbox_view.dart';
 import 'package:orderkar/view/more/payment_details_view.dart';
@@ -54,6 +57,20 @@ class _MoreViewState extends State<MoreView> {
       "base": 0
     },
   ];
+
+  Future<void> signOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginView()),
+      );
+      Globs.hideHUD();
+    } catch (e) {
+      print('Failed to sign out: $e');
+      Globs.hideHUD();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +154,7 @@ class _MoreViewState extends State<MoreView> {
                                 MaterialPageRoute(
                                     builder: (context) => const AboutUsView()));
                           case "6":
-                            ServiceCall.logout();
+                            signOut();
 
                           default:
                         }

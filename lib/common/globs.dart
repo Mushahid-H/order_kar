@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -127,6 +128,17 @@ class MSG {
   static const enterPassword =
       "Please enter password minimum 6 characters at least.";
   static const enterPasswordNotMatch = "Please enter password not match.";
+
+  static const enterFName = "Please enter your first name.";
+  static const enterLName = "Please enter your last name.";
+
+  static const enterCardNm = "Please enter your Card number ";
+  static const cardLenth = "Card length should be 16 digits.";
+
+  static const enterCardMn = "Please enter Card month.";
+  static const enterCardYr = "Please enter Card year.";
+  static const enterCardCode = "Please enter Security Code.";
+
   static const success = "success";
   static const fail = "fail";
 }
