@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:orderkar/common/extension.dart';
 import 'package:orderkar/common/globs.dart';
 import 'package:orderkar/common_widget/round_button.dart';
 import 'package:image_picker/image_picker.dart';
@@ -50,15 +51,14 @@ class _ProfileViewState extends State<ProfileView> {
             isImageLocal = !url!.startsWith('http');
           });
         } else {
-          print('Document does not exist for user: ${user.email}');
+          mdShowAlert(Globs.appName, "User does not exists", () {});
         }
       } else {
-        print('No user is currently logged in');
+        mdShowAlert(Globs.appName, "User is not logged in", () {});
       }
     } catch (e) {
       // Handle error
-      print('Error fetching user data: $e');
-      // You might want to throw the error or handle it differently based on your app's requirements
+      mdShowAlert(Globs.appName, "Failed to fetch data", () {});
     }
 
     return userData;
@@ -75,7 +75,7 @@ class _ProfileViewState extends State<ProfileView> {
         userData = data;
       });
     }).catchError((error) {
-      print('Error fetching user data: $error');
+      mdShowAlert(Globs.appName, "Error fetching data", () {});
     });
   }
 
@@ -122,7 +122,7 @@ class _ProfileViewState extends State<ProfileView> {
       );
       Globs.hideHUD();
     } catch (e) {
-      print('Failed to sign out: $e');
+      mdShowAlert(Globs.appName, "Failed to sign out", () {});
       Globs.hideHUD();
     }
   }

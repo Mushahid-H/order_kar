@@ -1,22 +1,27 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:orderkar/common/extension.dart';
+import 'package:orderkar/common/globs.dart';
 import 'package:orderkar/common_widget/round_icon_button.dart';
 
 import '../../common/color_extension.dart';
 import '../more/my_order_view.dart';
+import '../Cart_Firebase.dart';
 
 class ItemDetailsView extends StatefulWidget {
   final iobj;
-  const ItemDetailsView({super.key, this.iobj});
+  const ItemDetailsView({super.key, required this.iobj});
 
   @override
   State<ItemDetailsView> createState() => _ItemDetailsViewState();
 }
 
 class _ItemDetailsViewState extends State<ItemDetailsView> {
-  double price = 15;
+  final FirestoreService _firestoreService = FirestoreService();
   int qty = 1;
   bool isFav = false;
+  String size = "";
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +31,8 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
       body: Stack(
         alignment: Alignment.topCenter,
         children: [
-          Image.asset(
-            "assets/img/detail_top.png",
+          Image.network(
+            widget.iobj["image"],
             width: media.width,
             height: media.width,
             fit: BoxFit.cover,
@@ -69,7 +74,7 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 25),
                                 child: Text(
-                                  "Tandoori Chicken Pizza",
+                                  widget.iobj["name"],
                                   style: TextStyle(
                                       color: TColor.primaryText,
                                       fontSize: 22,
@@ -114,7 +119,7 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                                           height: 4,
                                         ),
                                         Text(
-                                          " 4 Star Ratings",
+                                          widget.iobj["rate"].toString(),
                                           style: TextStyle(
                                               color: TColor.primary,
                                               fontSize: 11,
@@ -127,7 +132,7 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                                           CrossAxisAlignment.end,
                                       children: [
                                         Text(
-                                          "\$${price.toStringAsFixed(2)}",
+                                          "\$${widget.iobj["price"].toStringAsFixed(2)}",
                                           style: TextStyle(
                                               color: TColor.primaryText,
                                               fontSize: 31,
@@ -169,7 +174,7 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 25),
                                 child: Text(
-                                  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ornare leo non mollis id cursus. Eu euismod faucibus in leo malesuada",
+                                  widget.iobj["description"],
                                   style: TextStyle(
                                       color: TColor.secondaryText,
                                       fontSize: 12),
@@ -215,7 +220,8 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton(
                                       isExpanded: true,
-                                      items: ["small", "Big"].map((e) {
+                                      items:
+                                          ["small", "medium", "Big"].map((e) {
                                         return DropdownMenuItem(
                                           value: e,
                                           child: Text(
@@ -226,9 +232,14 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                                           ),
                                         );
                                       }).toList(),
-                                      onChanged: (val) {},
+                                      onChanged: (val) {
+                                        size = val.toString();
+                                        setState(() {});
+                                      },
                                       hint: Text(
-                                        "- Select the size of portion -",
+                                        size.isNotEmpty
+                                            ? size
+                                            : "- Select the size of portion -",
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                             color: TColor.secondaryText,
@@ -240,41 +251,6 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                               ),
                               const SizedBox(
                                 height: 15,
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 25),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15),
-                                  decoration: BoxDecoration(
-                                      color: TColor.textfield,
-                                      borderRadius: BorderRadius.circular(5)),
-                                  child: DropdownButtonHideUnderline(
-                                    child: DropdownButton(
-                                      isExpanded: true,
-                                      items: ["small", "Big"].map((e) {
-                                        return DropdownMenuItem(
-                                          value: e,
-                                          child: Text(
-                                            e,
-                                            style: TextStyle(
-                                                color: TColor.primaryText,
-                                                fontSize: 14),
-                                          ),
-                                        );
-                                      }).toList(),
-                                      onChanged: (val) {},
-                                      hint: Text(
-                                        "- Select the ingredients -",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: TColor.secondaryText,
-                                            fontSize: 14),
-                                      ),
-                                    ),
-                                  ),
-                                ),
                               ),
                               const SizedBox(
                                 height: 25,
@@ -439,7 +415,7 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                                                     height: 15,
                                                   ),
                                                   Text(
-                                                    "\$${(price * qty).toString()}",
+                                                    "\$${(widget.iobj["price"] * qty).toString()}",
                                                     style: TextStyle(
                                                         color:
                                                             TColor.primaryText,
@@ -458,7 +434,29 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                                                         icon:
                                                             "assets/img/shopping_add.png",
                                                         color: TColor.primary,
-                                                        onPressed: () {}),
+                                                        onPressed: () {
+                                                          _firestoreService.addToCart(
+                                                              FirebaseAuth
+                                                                  .instance
+                                                                  .currentUser!
+                                                                  .email
+                                                                  .toString(),
+                                                              widget
+                                                                  .iobj["name"],
+                                                              (widget.iobj[
+                                                                          "price"]
+                                                                      .toDouble() *
+                                                                  qty.toDouble()),
+                                                              qty,
+                                                              size);
+                                                          mdShowAlert(
+                                                              Globs.appName,
+                                                              "Item Add Successfully",
+                                                              () {
+                                                            Navigator.pop(
+                                                                context);
+                                                          });
+                                                        }),
                                                   )
                                                 ],
                                               )),

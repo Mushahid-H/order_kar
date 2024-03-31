@@ -215,7 +215,8 @@ class _MenuItemsViewState extends State<MenuItemsView> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const ItemDetailsView()),
+                            builder: (context) =>
+                                ItemDetailsView(iobj: _searchResult[index])),
                       );
                     },
                   );
