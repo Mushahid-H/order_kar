@@ -1,24 +1,38 @@
+import 'dart:ffi';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:orderkar/common/color_extension.dart';
+import 'package:orderkar/common/extension.dart';
+import 'package:orderkar/common/globs.dart';
 import 'package:orderkar/common_widget/round_button.dart';
+import 'package:orderkar/view/Cart_Firebase.dart';
 
 import 'checkout_view.dart';
 
 class MyOrderView extends StatefulWidget {
-  const MyOrderView({super.key});
+  const MyOrderView({Key? key}) : super(key: key);
 
   @override
   State<MyOrderView> createState() => _MyOrderViewState();
 }
 
 class _MyOrderViewState extends State<MyOrderView> {
-  List itemArr = [
-    {"name": "Beef Burger", "qty": "1", "price": 16.0},
-    {"name": "Classic Burger", "qty": "1", "price": 14.0},
-    {"name": "Cheese Chicken Burger", "qty": "1", "price": 17.0},
-    {"name": "Chicken Legs Basket", "qty": "1", "price": 15.0},
-    {"name": "French Fires Large", "qty": "1", "price": 6.0}
-  ];
+  FirestoreService firestoreService = FirestoreService();
+  List<Map<String, dynamic>> itemArr = [];
+  var deliveryCost = 5;
+  double subTotal = 0.0;
+  bool isSubUpdated = false;
+
+  @override
+  void initState() {
+    super.initState();
+    subTotal = 0;
+    Future.delayed(const Duration(milliseconds: 150), () {
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,206 +73,111 @@ class _MyOrderViewState extends State<MyOrderView> {
                   ],
                 ),
               ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
-                child: Row(
-                  children: [
-                    ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
-                        child: Image.asset(
-                          "assets/img/shop_logo.png",
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                        )),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "King Burgers",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: TColor.primaryText,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700),
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Image.asset(
-                                "assets/img/rate.png",
-                                width: 10,
-                                height: 10,
-                                fit: BoxFit.cover,
-                              ),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                              Text(
-                                "4.9",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: TColor.primary, fontSize: 12),
-                              ),
-                              const SizedBox(
-                                width: 8,
-                              ),
-                              Text(
-                                "(124 Ratings)",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: TColor.secondaryText, fontSize: 12),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Burger",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: TColor.secondaryText, fontSize: 12),
-                              ),
-                              Text(
-                                " . ",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: TColor.primary, fontSize: 12),
-                              ),
-                              Text(
-                                "Western Food",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: TColor.secondaryText, fontSize: 12),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 4,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Image.asset(
-                                "assets/img/location-pin.png",
-                                width: 13,
-                                height: 13,
-                                fit: BoxFit.contain,
-                              ),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                              Expanded(
-                                child: Text(
-                                  "No 03, 4th Lane, Newyork",
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                      color: TColor.secondaryText,
-                                      fontSize: 12),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
+              // Container to display cart items
               Container(
                 decoration: BoxDecoration(color: TColor.textfield),
-                child: ListView.separated(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  padding: EdgeInsets.zero,
-                  itemCount: itemArr.length,
-                  separatorBuilder: ((context, index) => Divider(
-                        indent: 25,
-                        endIndent: 25,
-                        color: TColor.secondaryText.withOpacity(0.5),
-                        height: 1,
-                      )),
-                  itemBuilder: ((context, index) {
-                    var cObj = itemArr[index] as Map? ?? {};
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 15, horizontal: 25),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              "${cObj["name"].toString()} x${cObj["qty"].toString()}",
-                              style: TextStyle(
-                                  color: TColor.primaryText,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500),
-                            ),
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: firestoreService.getCartItemsStream(
+                      FirebaseAuth.instance.currentUser!.email),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    }
+
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    // subTotal = 0.0;
+
+                    itemArr.clear();
+
+                    snapshot.data!.docs.forEach((doc) {
+                      itemArr.add(doc.data() as Map<String, dynamic>);
+                    });
+
+                    return ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      itemCount: itemArr.length,
+                      separatorBuilder: ((context, index) => Divider(
+                            indent: 25,
+                            endIndent: 25,
+                            color: TColor.secondaryText.withOpacity(0.5),
+                            height: 1,
+                          )),
+                      itemBuilder: ((context, index) {
+                        var cObj = itemArr[index] as Map? ?? {};
+                        subTotal = itemArr
+                                .map((element) =>
+                                    element["totalPrice"] as double)
+                                .reduce((value, element) => value + element) *
+                            cObj["qty"];
+                        return Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 15, horizontal: 25),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  "${cObj["productName"].toString()} x ${cObj["qty"].toString()} ${cObj["productSize"] ?? "small"}",
+                                  style: TextStyle(
+                                      color: TColor.primaryText,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 15,
+                              ),
+                              Text(
+                                "\$${cObj["totalPrice"].toString()}",
+                                style: TextStyle(
+                                    color: TColor.primaryText,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                              const SizedBox(
+                                width: 15,
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  firestoreService.removeFromCart(
+                                      FirebaseAuth.instance.currentUser!.email,
+                                      cObj["productName"].toString());
+
+                                  setState(() {
+                                    subTotal -=
+                                        itemArr[index]["totalPrice"] as double;
+                                    itemArr.removeAt(index);
+                                  });
+                                  mdShowAlert(Globs.appName,
+                                      "Item deleted successfully", () {
+                                    if (itemArr.isEmpty) {
+                                      subTotal = 0;
+                                    }
+                                    setState(() {});
+                                  });
+                                },
+                                icon: const Icon(Icons.delete),
+                              ),
+                            ],
                           ),
-                          const SizedBox(
-                            width: 15,
-                          ),
-                          Text(
-                            "\$${cObj["price"].toString()}",
-                            style: TextStyle(
-                                color: TColor.primaryText,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700),
-                          )
-                        ],
-                      ),
+                        );
+                      }),
                     );
-                  }),
+                  },
                 ),
               ),
-              Padding(
+              // Container to display subtotal, delivery cost, and total
+              Container(
                 padding: const EdgeInsets.symmetric(horizontal: 25),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Delivery Instructions",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: TColor.primaryText,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700),
-                        ),
-                        TextButton.icon(
-                          onPressed: () {},
-                          icon: Icon(Icons.add, color: TColor.primary),
-                          label: Text(
-                            "Add Notes",
-                            style: TextStyle(
-                                color: TColor.primary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500),
-                          ),
-                        )
-                      ],
-                    ),
-                    Divider(
-                      color: TColor.secondaryText.withOpacity(0.5),
-                      height: 1,
-                    ),
                     const SizedBox(
                       height: 15,
                     ),
@@ -274,7 +193,7 @@ class _MyOrderViewState extends State<MyOrderView> {
                               fontWeight: FontWeight.w700),
                         ),
                         Text(
-                          "\$68",
+                          "\$${subTotal.toString()}",
                           style: TextStyle(
                               color: TColor.primary,
                               fontSize: 13,
@@ -297,7 +216,7 @@ class _MyOrderViewState extends State<MyOrderView> {
                               fontWeight: FontWeight.w700),
                         ),
                         Text(
-                          "\$2",
+                          "\$${subTotal > 0 ? deliveryCost : 0}",
                           style: TextStyle(
                               color: TColor.primary,
                               fontSize: 13,
@@ -327,7 +246,7 @@ class _MyOrderViewState extends State<MyOrderView> {
                               fontWeight: FontWeight.w700),
                         ),
                         Text(
-                          "\$70",
+                          "\$${subTotal + (subTotal > 0 ? deliveryCost : 0)}",
                           style: TextStyle(
                               color: TColor.primary,
                               fontSize: 22,
@@ -339,15 +258,16 @@ class _MyOrderViewState extends State<MyOrderView> {
                       height: 25,
                     ),
                     RoundButton(
-                        title: "Checkout",
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const CheckoutView(),
-                            ),
-                          );
-                        }),
+                      title: "Checkout",
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const CheckoutView(),
+                          ),
+                        );
+                      },
+                    ),
                     const SizedBox(
                       height: 20,
                     ),

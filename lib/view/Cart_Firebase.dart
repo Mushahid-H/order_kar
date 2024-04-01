@@ -33,7 +33,7 @@ class FirestoreService {
     }
   }
 
-  Future<void> removeFromCart(String userId, String productName) async {
+  Future<void> removeFromCart(String? userId, String productName) async {
     try {
       await usersCollection
           .doc(userId)
@@ -46,21 +46,7 @@ class FirestoreService {
     }
   }
 
-  Future<void> updateCartItemQuantity(
-      String userId, String productName, int newQuantity) async {
-    try {
-      await usersCollection
-          .doc(userId)
-          .collection('cart')
-          .doc(productName)
-          .update({'quantity': newQuantity});
-    } catch (e) {
-      print("Error updating cart item quantity: $e");
-      throw e;
-    }
-  }
-
-  Stream<QuerySnapshot> getCartItemsStream(String userId) {
+  Stream<QuerySnapshot> getCartItemsStream(String? userId) {
     return usersCollection.doc(userId).collection('cart').snapshots();
   }
 }

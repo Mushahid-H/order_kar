@@ -451,7 +451,7 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                                                               size);
                                                           mdShowAlert(
                                                               Globs.appName,
-                                                              "Item Add Successfully",
+                                                              "Item added successfully",
                                                               () {
                                                             Navigator.pop(
                                                                 context);

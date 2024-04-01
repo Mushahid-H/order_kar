@@ -29,7 +29,13 @@ class _MenuItemsViewState extends State<MenuItemsView> {
   @override
   void initState() {
     super.initState();
-    fetchData();
+
+    if (widget.mObj["name"] == "Promotions") {
+      fetchData("Promotions");
+    } else {
+      fetchData("foodItems");
+    }
+
     Future.delayed(Duration(seconds: 2), () {
       setState(() {
         _searchResult = List.from(mObjList);
@@ -38,7 +44,7 @@ class _MenuItemsViewState extends State<MenuItemsView> {
   }
 
 // data form collection
-  Future<void> fetchData() async {
+  Future<void> fetchData(String coll_Name) async {
     try {
       // Get a reference to the collection
       CollectionReference collectionReference =
@@ -49,7 +55,7 @@ class _MenuItemsViewState extends State<MenuItemsView> {
 
       // Iterate through each document
       querySnapshot.docs.forEach((DocumentSnapshot document) {
-        fetchSubcollectionData(document.reference);
+        fetchSubcollectionData(document.reference, coll_Name);
       });
     } catch (e) {
       mdShowAlert(Globs.appName, "Error Occured while fetching data", () {});
@@ -57,11 +63,12 @@ class _MenuItemsViewState extends State<MenuItemsView> {
   }
 
 // data from sub collection
-  Future<void> fetchSubcollectionData(DocumentReference documentRef) async {
+  Future<void> fetchSubcollectionData(
+      DocumentReference documentRef, String coll_Name) async {
     try {
       // Get a reference to the subcollection
       CollectionReference subcollectionReference =
-          documentRef.collection('foodItems');
+          documentRef.collection(coll_Name);
 
       // Get documents from the subcollection
       QuerySnapshot subcollectionQuerySnapshot =

@@ -16,7 +16,7 @@ class _CheckoutViewState extends State<CheckoutView> {
   List paymentArr = [
     {"name": "Cash on delivery", "icon": "assets/img/cash.png"},
     {"name": "**** **** **** 2187", "icon": "assets/img/visa_icon.png"},
-    {"name": "test@gmail.com", "icon": "assets/img/paypal.png"},
+    // {"name": "test@gmail.com", "icon": "assets/img/paypal.png"},
   ];
 
   int selectMethod = -1;

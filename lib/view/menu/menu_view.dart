@@ -96,23 +96,6 @@ class _MenuViewState extends State<MenuView> {
                   const SizedBox(
                     height: 20,
                   ),
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  //   child: RoundTextfield(
-                  //     hintText: "Search Food",
-                  //     controller: txtSearch,
-                  //     left: Container(
-                  //       alignment: Alignment.center,
-                  //       width: 30,
-                  //       child: Image.asset(
-                  //         "assets/img/search.png",
-                  //         width: 20,
-                  //         height: 20,
-                  //       ),
-                  //     ),
-                  //       onChanged: (value) {},
-                  //   ),
-                  // ),
                   const SizedBox(
                     height: 30,
                   ),
