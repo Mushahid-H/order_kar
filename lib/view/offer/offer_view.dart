@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:orderkar/common/color_extension.dart';
 import 'package:orderkar/common_widget/round_button.dart';
+import 'package:orderkar/view/menu/item_details_view.dart';
 
 import '../../common_widget/popular_resutaurant_row.dart';
 import '../more/my_order_view.dart';
@@ -13,58 +15,58 @@ class OfferView extends StatefulWidget {
 }
 
 class _OfferViewState extends State<OfferView> {
-  TextEditingController txtSearch = TextEditingController();
+  List<Map<String, dynamic>> dealsArr = [];
 
-  List offerArr = [
-    {
-      "image": "assets/img/offer_1.png",
-      "name": "Café de Noires",
-      "rate": "4.9",
-      "rating": "124",
-      "type": "Cafa",
-      "food_type": "Western Food"
-    },
-    {
-      "image": "assets/img/offer_2.png",
-      "name": "Isso",
-      "rate": "4.9",
-      "rating": "124",
-      "type": "Cafa",
-      "food_type": "Western Food"
-    },
-    {
-      "image": "assets/img/offer_3.png",
-      "name": "Cafe Beans",
-      "rate": "4.9",
-      "rating": "124",
-      "type": "Cafa",
-      "food_type": "Western Food"
-    },
-    {
-      "image": "assets/img/offer_1.png",
-      "name": "Café de Noires",
-      "rate": "4.9",
-      "rating": "124",
-      "type": "Cafa",
-      "food_type": "Western Food"
-    },
-    {
-      "image": "assets/img/offer_2.png",
-      "name": "Isso",
-      "rate": "4.9",
-      "rating": "124",
-      "type": "Cafa",
-      "food_type": "Western Food"
-    },
-    {
-      "image": "assets/img/offer_3.png",
-      "name": "Cafe Beans",
-      "rate": "4.9",
-      "rating": "124",
-      "type": "Cafa",
-      "food_type": "Western Food"
-    },
-  ];
+  Future<void> fetchData() async {
+    try {
+      // Get a reference to the collection
+      CollectionReference collectionReference =
+          FirebaseFirestore.instance.collection('restaurants');
+
+      // Get documents from the collection
+      QuerySnapshot querySnapshot = await collectionReference.get();
+
+      // Iterate through each document
+      querySnapshot.docs.forEach((DocumentSnapshot document) {
+        fetchSubcollectionData(document.reference);
+      });
+    } catch (e) {
+      print("Error adding to cart: $e");
+    }
+  }
+
+// data from sub collection
+  Future<void> fetchSubcollectionData(DocumentReference documentRef) async {
+    try {
+      // Get a reference to the subcollection
+      CollectionReference subcollectionReference =
+          documentRef.collection("Deals");
+
+      // Get documents from the subcollection
+      QuerySnapshot subcollectionQuerySnapshot =
+          await subcollectionReference.get();
+
+      // Iterate through each document in the subcollection
+      subcollectionQuerySnapshot.docs.forEach((DocumentSnapshot subDocument) {
+        // Access fields of the subdocument
+        Map<String, dynamic> subData =
+            subDocument.data() as Map<String, dynamic>;
+
+        setState(() {
+          dealsArr.add(subData);
+        });
+      });
+    } catch (e) {
+      print("Error adding to cart: $e");
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -140,12 +142,18 @@ class _OfferViewState extends State<OfferView> {
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 padding: EdgeInsets.zero,
-                itemCount: offerArr.length,
+                itemCount: dealsArr.length,
                 itemBuilder: ((context, index) {
-                  var pObj = offerArr[index] as Map? ?? {};
+                  var pObj = dealsArr[index] as Map? ?? {};
                   return PopularRestaurantRow(
                     pObj: pObj,
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  ItemDetailsView(iobj: pObj)));
+                    },
                   );
                 }),
               ),

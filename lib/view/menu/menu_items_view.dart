@@ -25,26 +25,62 @@ class _MenuItemsViewState extends State<MenuItemsView> {
   List<Map<String, dynamic>> mObjList = [];
 
   List<Map<String, dynamic>> _searchResult = [];
+  List<String> documentIds = [];
 
   @override
   void initState() {
     super.initState();
 
     if (widget.mObj["name"] == "Promotions") {
-      fetchData("Promotions");
+      fetchPromotionData('Promotions', 'restaurants');
     } else {
-      fetchData("foodItems");
+      fetchData();
     }
 
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(Duration(seconds: 3), () {
       setState(() {
         _searchResult = List.from(mObjList);
       });
     });
   }
 
+  // fetching promotional dataFuture<void> fetchRestaurantData() async {
+  Future<List<Map<String, dynamic>>> fetchPromotionData(
+      String firstCollectionPath, String secondCollectionPath) async {
+    try {
+      // Get documents from the first collection
+      QuerySnapshot firstCollectionSnapshot = await FirebaseFirestore.instance
+          .collection(firstCollectionPath)
+          .get();
+
+      // Extract document IDs (names) from the first collection
+      documentIds = firstCollectionSnapshot.docs.map((doc) => doc.id).toList();
+
+      // Use the document IDs to construct queries for the second collection
+      List<Future<DocumentSnapshot>> futureDocuments = documentIds.map((id) {
+        return FirebaseFirestore.instance
+            .collection(secondCollectionPath)
+            .doc(id)
+            .get();
+      }).toList();
+
+      // Wait for all documents to be retrieved
+      List<DocumentSnapshot> documents = await Future.wait(futureDocuments);
+      // Process the documents retrieved from the second collection
+      List<Map<String, dynamic>> data =
+          documents.map((doc) => doc.data() as Map<String, dynamic>).toList();
+
+      menuItemsArr = data;
+
+      return data;
+    } catch (e) {
+      print("Error fetching data from second collection: $e");
+      return []; // Return empty list in case of error
+    }
+  }
+
 // data form collection
-  Future<void> fetchData(String coll_Name) async {
+  Future<void> fetchData() async {
     try {
       // Get a reference to the collection
       CollectionReference collectionReference =
@@ -55,7 +91,7 @@ class _MenuItemsViewState extends State<MenuItemsView> {
 
       // Iterate through each document
       querySnapshot.docs.forEach((DocumentSnapshot document) {
-        fetchSubcollectionData(document.reference, coll_Name);
+        fetchSubcollectionData(document.reference);
       });
     } catch (e) {
       mdShowAlert(Globs.appName, "Error Occured while fetching data", () {});
@@ -63,12 +99,11 @@ class _MenuItemsViewState extends State<MenuItemsView> {
   }
 
 // data from sub collection
-  Future<void> fetchSubcollectionData(
-      DocumentReference documentRef, String coll_Name) async {
+  Future<void> fetchSubcollectionData(DocumentReference documentRef) async {
     try {
       // Get a reference to the subcollection
       CollectionReference subcollectionReference =
-          documentRef.collection(coll_Name);
+          documentRef.collection("foodItems");
 
       // Get documents from the subcollection
       QuerySnapshot subcollectionQuerySnapshot =
@@ -103,10 +138,18 @@ class _MenuItemsViewState extends State<MenuItemsView> {
 
   @override
   Widget build(BuildContext context) {
-    mObjList = menuItemsArr
-        .where((item) => item.containsValue(widget.mObj["name"]))
-        .toList();
+    if (widget.mObj["name"] == "Promotions") {
+      mObjList = menuItemsArr
+          .where((item) => documentIds.contains(item["name"]))
+          .toList();
+    } else {
+      mObjList = menuItemsArr
+          .where((item) => item.containsValue(widget.mObj["name"]))
+          .toList();
+    }
 
+    _searchResult = mObjList;
+    print("helo $_searchResult");
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -222,8 +265,9 @@ class _MenuItemsViewState extends State<MenuItemsView> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                ItemDetailsView(iobj: _searchResult[index])),
+                            builder: (context) => ItemDetailsView(
+                                iobj: _searchResult[index],
+                                name: widget.mObj["name"])),
                       );
                     },
                   );

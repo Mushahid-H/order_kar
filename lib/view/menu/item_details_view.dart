@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:orderkar/common/extension.dart';
 import 'package:orderkar/common/globs.dart';
+import 'package:orderkar/common_widget/round_button.dart';
 import 'package:orderkar/common_widget/round_icon_button.dart';
+import 'package:orderkar/view/menu/menu_items_view.dart';
 
 import '../../common/color_extension.dart';
 import '../more/my_order_view.dart';
@@ -11,7 +13,8 @@ import '../Cart_Firebase.dart';
 
 class ItemDetailsView extends StatefulWidget {
   final iobj;
-  const ItemDetailsView({super.key, required this.iobj});
+  final name;
+  const ItemDetailsView({super.key, required this.iobj, this.name});
 
   @override
   State<ItemDetailsView> createState() => _ItemDetailsViewState();
@@ -127,29 +130,33 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                                         ),
                                       ],
                                     ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        Text(
-                                          "\$${widget.iobj["price"].toStringAsFixed(2)}",
-                                          style: TextStyle(
-                                              color: TColor.primaryText,
-                                              fontSize: 31,
-                                              fontWeight: FontWeight.w700),
-                                        ),
-                                        const SizedBox(
-                                          height: 4,
-                                        ),
-                                        Text(
-                                          "/per Portion",
-                                          style: TextStyle(
-                                              color: TColor.primaryText,
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w500),
-                                        ),
-                                      ],
-                                    )
+                                    widget.name != "Promotions"
+                                        ? Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                "\$${widget.iobj["price"]?.toStringAsFixed(2)}",
+                                                style: TextStyle(
+                                                    color: TColor.primaryText,
+                                                    fontSize: 31,
+                                                    fontWeight:
+                                                        FontWeight.w700),
+                                              ),
+                                              const SizedBox(
+                                                height: 4,
+                                              ),
+                                              Text(
+                                                "/per Portion",
+                                                style: TextStyle(
+                                                    color: TColor.primaryText,
+                                                    fontSize: 11,
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                              ),
+                                            ],
+                                          )
+                                        : Text(""),
                                   ],
                                 ),
                               ),
@@ -183,72 +190,79 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                               const SizedBox(
                                 height: 20,
                               ),
-                              Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 25),
-                                  child: Divider(
-                                    color:
-                                        TColor.secondaryText.withOpacity(0.4),
-                                    height: 1,
-                                  )),
+                              widget.name != "Promotions"
+                                  ? Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 25),
+                                      child: Divider(
+                                        color: TColor.secondaryText
+                                            .withOpacity(0.4),
+                                        height: 1,
+                                      ))
+                                  : Text(""),
                               const SizedBox(
                                 height: 20,
                               ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 25),
-                                child: Text(
-                                  "Customize your Order",
-                                  style: TextStyle(
-                                      color: TColor.primaryText,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700),
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 25),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15),
-                                  decoration: BoxDecoration(
-                                      color: TColor.textfield,
-                                      borderRadius: BorderRadius.circular(5)),
-                                  child: DropdownButtonHideUnderline(
-                                    child: DropdownButton(
-                                      isExpanded: true,
-                                      items:
-                                          ["small", "medium", "Big"].map((e) {
-                                        return DropdownMenuItem(
-                                          value: e,
-                                          child: Text(
-                                            e,
-                                            style: TextStyle(
-                                                color: TColor.primaryText,
-                                                fontSize: 14),
-                                          ),
-                                        );
-                                      }).toList(),
-                                      onChanged: (val) {
-                                        size = val.toString();
-                                        setState(() {});
-                                      },
-                                      hint: Text(
-                                        size.isNotEmpty
-                                            ? size
-                                            : "- Select the size of portion -",
-                                        textAlign: TextAlign.center,
+                              widget.name != "Promotions"
+                                  ? Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 25),
+                                      child: Text(
+                                        "Customize your Order",
                                         style: TextStyle(
-                                            color: TColor.secondaryText,
-                                            fontSize: 14),
+                                            color: TColor.primaryText,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700),
                                       ),
-                                    ),
-                                  ),
-                                ),
+                                    )
+                                  : Text(""),
+                              const SizedBox(
+                                height: 20,
                               ),
+                              widget.name != "Promotions"
+                                  ? Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 25),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 15),
+                                        decoration: BoxDecoration(
+                                            color: TColor.textfield,
+                                            borderRadius:
+                                                BorderRadius.circular(5)),
+                                        child: DropdownButtonHideUnderline(
+                                          child: DropdownButton(
+                                            isExpanded: true,
+                                            items: ["small", "medium", "Big"]
+                                                .map((e) {
+                                              return DropdownMenuItem(
+                                                value: e,
+                                                child: Text(
+                                                  e,
+                                                  style: TextStyle(
+                                                      color: TColor.primaryText,
+                                                      fontSize: 14),
+                                                ),
+                                              );
+                                            }).toList(),
+                                            onChanged: (val) {
+                                              size = val.toString();
+                                              setState(() {});
+                                            },
+                                            hint: Text(
+                                              size.isNotEmpty
+                                                  ? size
+                                                  : "- Select the size of portion -",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  color: TColor.secondaryText,
+                                                  fontSize: 14),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : Text(""),
                               const SizedBox(
                                 height: 15,
                               ),
@@ -258,94 +272,103 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                               Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 25),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      "Number of Portions",
-                                      style: TextStyle(
-                                          color: TColor.primaryText,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                    const Spacer(),
-                                    InkWell(
-                                      onTap: () {
-                                        qty = qty - 1;
-
-                                        if (qty < 1) {
-                                          qty = 1;
-                                        }
-                                        setState(() {});
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 15),
-                                        height: 25,
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                            color: TColor.primary,
-                                            borderRadius:
-                                                BorderRadius.circular(12.5)),
-                                        child: Text(
-                                          "-",
-                                          style: TextStyle(
-                                              color: TColor.white,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w700),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 8,
-                                    ),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 15),
-                                      height: 25,
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: TColor.primary,
+                                child: widget.name != "Promotions"
+                                    ? Row(
+                                        children: [
+                                          Text(
+                                            "Number of Portions",
+                                            style: TextStyle(
+                                                color: TColor.primaryText,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w700),
                                           ),
-                                          borderRadius:
-                                              BorderRadius.circular(12.5)),
-                                      child: Text(
-                                        qty.toString(),
-                                        style: TextStyle(
-                                            color: TColor.primary,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 8,
-                                    ),
-                                    InkWell(
-                                      onTap: () {
-                                        qty = qty + 1;
+                                          const Spacer(),
+                                          InkWell(
+                                            onTap: () {
+                                              qty = qty - 1;
 
-                                        setState(() {});
-                                      },
-                                      child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 15),
-                                        height: 25,
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                            color: TColor.primary,
-                                            borderRadius:
-                                                BorderRadius.circular(12.5)),
-                                        child: Text(
-                                          "+",
-                                          style: TextStyle(
-                                              color: TColor.white,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w700),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                              if (qty < 1) {
+                                                qty = 1;
+                                              }
+                                              setState(() {});
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 15),
+                                              height: 25,
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                  color: TColor.primary,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          12.5)),
+                                              child: Text(
+                                                "-",
+                                                style: TextStyle(
+                                                    color: TColor.white,
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.w700),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            width: 8,
+                                          ),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 15),
+                                            height: 25,
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color: TColor.primary,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        12.5)),
+                                            child: Text(
+                                              qty.toString(),
+                                              style: TextStyle(
+                                                  color: TColor.primary,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            width: 8,
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              qty = qty + 1;
+
+                                              setState(() {});
+                                            },
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 15),
+                                              height: 25,
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                  color: TColor.primary,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          12.5)),
+                                              child: Text(
+                                                "+",
+                                                style: TextStyle(
+                                                    color: TColor.white,
+                                                    fontSize: 14,
+                                                    fontWeight:
+                                                        FontWeight.w700),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      )
+                                    : null,
                               ),
                               SizedBox(
                                 height: 220,
@@ -367,129 +390,160 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                                         alignment: Alignment.centerRight,
                                         children: [
                                           Container(
-                                              margin: const EdgeInsets.only(
-                                                  top: 8,
-                                                  bottom: 8,
-                                                  left: 10,
-                                                  right: 20),
-                                              width: media.width - 80,
-                                              height: 120,
-                                              decoration: const BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.only(
-                                                          topLeft:
-                                                              Radius.circular(
-                                                                  35),
-                                                          bottomLeft:
-                                                              Radius.circular(
-                                                                  35),
-                                                          topRight:
-                                                              Radius.circular(
-                                                                  10),
-                                                          bottomRight:
-                                                              Radius.circular(
-                                                                  10)),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                        color: Colors.black12,
-                                                        blurRadius: 12,
-                                                        offset: Offset(0, 4))
-                                                  ]),
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    "Total Price",
-                                                    style: TextStyle(
-                                                        color:
-                                                            TColor.primaryText,
-                                                        fontSize: 12,
-                                                        fontWeight:
-                                                            FontWeight.w500),
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 15,
-                                                  ),
-                                                  Text(
-                                                    "\$${(widget.iobj["price"] * qty).toString()}",
-                                                    style: TextStyle(
-                                                        color:
-                                                            TColor.primaryText,
-                                                        fontSize: 21,
-                                                        fontWeight:
-                                                            FontWeight.w700),
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 15,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 130,
-                                                    height: 25,
-                                                    child: RoundIconButton(
-                                                        title: "Add to Cart",
-                                                        icon:
-                                                            "assets/img/shopping_add.png",
-                                                        color: TColor.primary,
-                                                        onPressed: () {
-                                                          _firestoreService.addToCart(
-                                                              FirebaseAuth
-                                                                  .instance
-                                                                  .currentUser!
-                                                                  .email
-                                                                  .toString(),
-                                                              widget
-                                                                  .iobj["name"],
-                                                              (widget.iobj[
-                                                                          "price"]
-                                                                      .toDouble() *
-                                                                  qty.toDouble()),
-                                                              qty,
-                                                              size);
-                                                          mdShowAlert(
-                                                              Globs.appName,
-                                                              "Item added successfully",
-                                                              () {
-                                                            Navigator.pop(
-                                                                context);
-                                                          });
-                                                        }),
+                                            margin: const EdgeInsets.only(
+                                                top: 8,
+                                                bottom: 8,
+                                                left: 10,
+                                                right: 20),
+                                            width: media.width - 80,
+                                            height: 120,
+                                            decoration: const BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius: BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(35),
+                                                    bottomLeft:
+                                                        Radius.circular(35),
+                                                    topRight:
+                                                        Radius.circular(10),
+                                                    bottomRight:
+                                                        Radius.circular(10)),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                      color: Colors.black12,
+                                                      blurRadius: 12,
+                                                      offset: Offset(0, 4))
+                                                ]),
+                                            child: widget.name != "Promotions"
+                                                ? Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                        "Total Price",
+                                                        style: TextStyle(
+                                                            color: TColor
+                                                                .primaryText,
+                                                            fontSize: 12,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w500),
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 15,
+                                                      ),
+                                                      Text(
+                                                        "\$${(widget.iobj["price"] * qty).toString()}",
+                                                        style: TextStyle(
+                                                            color: TColor
+                                                                .primaryText,
+                                                            fontSize: 21,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w700),
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 15,
+                                                      ),
+                                                      SizedBox(
+                                                        width: 130,
+                                                        height: 25,
+                                                        child: RoundIconButton(
+                                                            title:
+                                                                "Add to Cart",
+                                                            icon:
+                                                                "assets/img/shopping_add.png",
+                                                            color:
+                                                                TColor.primary,
+                                                            onPressed: () {
+                                                              _firestoreService.addToCart(
+                                                                  FirebaseAuth
+                                                                      .instance
+                                                                      .currentUser!
+                                                                      .email
+                                                                      .toString(),
+                                                                  widget.iobj[
+                                                                      "name"],
+                                                                  (widget.iobj[
+                                                                              "price"]
+                                                                          .toDouble() *
+                                                                      qty.toDouble()),
+                                                                  qty,
+                                                                  size);
+                                                              mdShowAlert(
+                                                                  Globs.appName,
+                                                                  "Item added successfully",
+                                                                  () {
+                                                                Navigator.pop(
+                                                                    context);
+                                                              });
+                                                            }),
+                                                      ),
+                                                    ],
                                                   )
-                                                ],
-                                              )),
-                                          InkWell(
-                                            onTap: () {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          const MyOrderView()));
-                                            },
-                                            child: Container(
-                                              width: 45,
-                                              height: 45,
-                                              decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          22.5),
-                                                  boxShadow: const [
-                                                    BoxShadow(
-                                                        color: Colors.black12,
-                                                        blurRadius: 4,
-                                                        offset: Offset(0, 2))
-                                                  ]),
-                                              alignment: Alignment.center,
-                                              child: Image.asset(
-                                                  "assets/img/shopping_cart.png",
-                                                  width: 20,
-                                                  height: 20,
-                                                  color: TColor.primary),
-                                            ),
+                                                : Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      SizedBox(
+                                                        width: 150,
+                                                        height: 40,
+                                                        child: RoundIconButton(
+                                                            title: "Visit Menu",
+                                                            icon:
+                                                                "assets/img/shopping_add.png",
+                                                            color:
+                                                                TColor.primary,
+                                                            onPressed: () => {
+                                                                  Navigator.push(
+                                                                      context,
+                                                                      MaterialPageRoute(
+                                                                          builder: (context) =>
+                                                                              (MenuItemsView(mObj: widget.iobj))))
+                                                                }),
+                                                      )
+                                                    ],
+                                                  ),
                                           ),
+                                          widget.name != "Promotions"
+                                              ? InkWell(
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                const MyOrderView()));
+                                                  },
+                                                  child: Container(
+                                                    width: 45,
+                                                    height: 45,
+                                                    decoration: BoxDecoration(
+                                                        color: Colors.white,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(22.5),
+                                                        boxShadow: const [
+                                                          BoxShadow(
+                                                              color: Colors
+                                                                  .black12,
+                                                              blurRadius: 4,
+                                                              offset:
+                                                                  Offset(0, 2))
+                                                        ]),
+                                                    alignment: Alignment.center,
+                                                    child: Image.asset(
+                                                        "assets/img/shopping_cart.png",
+                                                        width: 20,
+                                                        height: 20,
+                                                        color: TColor.primary),
+                                                  ),
+                                                )
+                                              : Text(""),
                                         ],
                                       ),
                                     )

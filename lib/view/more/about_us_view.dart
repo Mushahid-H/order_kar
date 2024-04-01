@@ -103,11 +103,12 @@ class _AboutUsViewState extends State<AboutUsView> {
 
                         return textDescription != null
                             ? Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 20),
                                 child: Text(
                                   textDescription,
                                   style: const TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.normal,
                                     color: Colors.black87,
                                     letterSpacing: 0.1,
