@@ -4,6 +4,7 @@ import 'package:orderkar/common/color_extension.dart';
 import 'package:orderkar/common/extension.dart';
 import 'package:orderkar/common/globs.dart';
 import 'package:orderkar/common_widget/round_textfield.dart';
+import 'package:orderkar/view/more/date_time_picker_screen.dart';
 
 import '../../common_widget/menu_item_row.dart';
 import '../more/my_order_view.dart';
@@ -37,7 +38,7 @@ class _MenuItemsViewState extends State<MenuItemsView> {
       fetchData();
     }
 
-    Future.delayed(Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 3), () {
       setState(() {
         _searchResult = List.from(mObjList);
       });
@@ -149,7 +150,7 @@ class _MenuItemsViewState extends State<MenuItemsView> {
     }
 
     _searchResult = mObjList;
-    print("helo $_searchResult");
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
@@ -232,7 +233,15 @@ class _MenuItemsViewState extends State<MenuItemsView> {
                           fontWeight: FontWeight.w800),
                     ),
                     InkWell(
-                      onTap: () => {},
+                      onTap: () => {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DateTimePickerScreen(
+                                restaurantId: widget.mObj["name"]),
+                          ),
+                        )
+                      },
                       child: Container(
                         decoration: BoxDecoration(
                           color: TColor.primary,

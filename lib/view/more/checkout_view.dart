@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:orderkar/common/color_extension.dart';
+import 'package:orderkar/common/extension.dart';
+import 'package:orderkar/common/globs.dart';
 import 'package:orderkar/common_widget/round_button.dart';
 
 // import 'change_address_view.dart';
@@ -15,11 +18,36 @@ class CheckoutView extends StatefulWidget {
 class _CheckoutViewState extends State<CheckoutView> {
   List paymentArr = [
     {"name": "Cash on delivery", "icon": "assets/img/cash.png"},
-    {"name": "**** **** **** 2187", "icon": "assets/img/visa_icon.png"},
+
     // {"name": "test@gmail.com", "icon": "assets/img/paypal.png"},
   ];
 
+  void getCardData() async {
+    try {
+      paymentArr.clear();
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc('card_info')
+          .get();
+      if (userDoc.exists) {
+        setState(() {
+          paymentArr.add(userDoc.data() as Map<String, dynamic>);
+        });
+      } else {
+        mdShowAlert(Globs.appName, "No data found", () {});
+      }
+    } catch (e) {
+      mdShowAlert(Globs.appName, "Error Occured", () {});
+    }
+  }
+
   int selectMethod = -1;
+
+  @override
+  void initState() {
+    super.initState();
+    getCardData();
+  }
 
   @override
   Widget build(BuildContext context) {
