@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:orderkar/common/color_extension.dart';
 
 import 'my_order_view.dart';
 
 class NotificationsView extends StatefulWidget {
   const NotificationsView({super.key});
-
+  static const route = '/notifications';
   @override
   State<NotificationsView> createState() => _NotificationsViewState();
 }
@@ -48,6 +49,7 @@ class _NotificationsViewState extends State<NotificationsView> {
 
   @override
   Widget build(BuildContext context) {
+    final message = ModalRoute.of(context)!.settings.arguments as Map?;
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(

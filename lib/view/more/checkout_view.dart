@@ -4,6 +4,7 @@ import 'package:orderkar/common/color_extension.dart';
 import 'package:orderkar/common/extension.dart';
 import 'package:orderkar/common/globs.dart';
 import 'package:orderkar/common_widget/round_button.dart';
+import 'package:orderkar/view/more/add_card_view.dart';
 
 // import 'change_address_view.dart';
 import 'checkout_message_view.dart';
@@ -118,24 +119,6 @@ class _CheckoutViewState extends State<CheckoutView> {
                         const SizedBox(
                           width: 4,
                         ),
-                        // TextButton(
-                        //   onPressed: () {
-                        //     Navigator.push(
-                        //       context,
-                        //       MaterialPageRoute(
-                        //           builder: (context) =>
-                        //               const ChangeAddressView()),
-                        //     );
-                        //   },
-                        //   child: Text(
-                        //     "Change",
-                        //     textAlign: TextAlign.center,
-                        //     style: TextStyle(
-                        //         color: TColor.primary,
-                        //         fontSize: 13,
-                        //         fontWeight: FontWeight.w700),
-                        //   ),
-                        // )
                       ],
                     ),
                   ],
@@ -164,17 +147,24 @@ class _CheckoutViewState extends State<CheckoutView> {
                               fontSize: 13,
                               fontWeight: FontWeight.w500),
                         ),
-                        TextButton.icon(
-                          onPressed: () {},
-                          icon: Icon(Icons.add, color: TColor.primary),
-                          label: Text(
-                            "Add Card",
-                            style: TextStyle(
-                                color: TColor.primary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700),
-                          ),
-                        )
+                        // TextButton.icon(
+                        //   onPressed: () {
+                        //     Navigator.push(
+                        //         context,
+                        //         MaterialPageRoute(
+                        //             builder: (context) => AddCardView(
+                        //                   onCardAdded: getCardData,
+                        //                 )));
+                        //   },
+                        //   icon: Icon(Icons.add, color: TColor.primary),
+                        //   label: Text(
+                        //     "Add Card",
+                        //     style: TextStyle(
+                        //         color: TColor.primary,
+                        //         fontSize: 13,
+                        //         fontWeight: FontWeight.w700),
+                        //   ),
+                        // )
                       ],
                     ),
                     ListView.builder(

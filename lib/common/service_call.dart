@@ -47,7 +47,7 @@ class ServiceCall {
   }
 
   static logout() {
-    Globs.udBoolSet(false, Globs.userLogin);
+    // Globs.udBoolSet(false, Globs.userLogin);
     userPayload = {};
     navigationService.navigateTo("welcome");
   }

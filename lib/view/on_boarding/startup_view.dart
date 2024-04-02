@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:orderkar/view/login/welcome_view.dart';
 import 'package:orderkar/view/main_tabview/main_tabview.dart';
@@ -20,18 +21,21 @@ class _StarupViewState extends State<StartupView> {
 
   void goWelcomePage() async {
     await Future.delayed(const Duration(seconds: 3));
-    welcomePage();
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AuthWrapper()),
+    );
   }
 
-  void welcomePage() {
-    if (Globs.udValueBool(Globs.userLogin)) {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const MainTabView()));
-    } else {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const WelcomeView()));
-    }
-  }
+  // void welcomePage() {
+  //   if (Globs.udValueBool(Globs.userLogin)) {
+  //     Navigator.push(context,
+  //  MaterialPageRoute(builder: (context) => const MainTabView()));
+  //   } else {
+  //     Navigator.push(context,
+  //         MaterialPageRoute(builder: (context) => const WelcomeView()));
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +60,38 @@ class _StarupViewState extends State<StartupView> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<User?>(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
+        if (snapshot.connectionState == ConnectionState.active) {
+          User? user = snapshot.data;
+          if (user == null) {
+            // User is not logged in
+            // Navigator.push(context,
+            //     MaterialPageRoute(builder: (context) => const WelcomeView()));
+            return WelcomeView();
+          } else {
+            // User is logged in
+            // Navigator.push(context,
+            //     MaterialPageRoute(builder: (context) => const MainTabView()));
+            return MainTabView();
+          }
+        } else {
+          // Connection state is not active yet
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+      },
     );
   }
 }

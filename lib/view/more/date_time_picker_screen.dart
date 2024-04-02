@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:orderkar/common/color_extension.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,6 +18,11 @@ class _DateTimePickerScreenState extends State<DateTimePickerScreen> {
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
   int numberOfPeople = 1;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -38,7 +44,7 @@ class _DateTimePickerScreenState extends State<DateTimePickerScreen> {
       // Create a reservations collection within the restaurant document
       CollectionReference reservationsRef =
           restaurantRef.collection('reservations');
-      print(reservationsRef.path);
+
       // Add a new document named after the userId with reservation data
       await reservationsRef.doc(userId).set({
         'dateTime': reservationDateTime,
