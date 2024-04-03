@@ -24,6 +24,8 @@ class _HomeViewState extends State<HomeView> {
   List<Map<String, dynamic>> popArr = [];
   String userName = '';
   String userAddress = '';
+  List promotDoc = [];
+  List<String> documentIds = [];
 
 // fetching restaurant data
   Future<void> fetchRestaurantData() async {
@@ -46,6 +48,61 @@ class _HomeViewState extends State<HomeView> {
       print("Error fetching restaurant data: $e");
       // Handle error as needed
     }
+  }
+
+  // fetching promotional dataFuture<void> fetchRestaurantData() async {
+  Future<List> fetchPromotionData(
+      String firstCollectionPath, String secondCollectionPath) async {
+    try {
+      // Get documents from the first collection
+      QuerySnapshot firstCollectionSnapshot = await FirebaseFirestore.instance
+          .collection(firstCollectionPath)
+          .get();
+
+      // Extract document IDs (names) from the first collection
+      documentIds = firstCollectionSnapshot.docs.map((doc) => doc.id).toList();
+
+      // Use the document IDs to construct queries for the second collection
+      List<Future<DocumentSnapshot>> futureDocuments = documentIds.map((id) {
+        return FirebaseFirestore.instance
+            .collection(secondCollectionPath)
+            .doc(id)
+            .get();
+      }).toList();
+
+      // Wait for all documents to be retrieved
+      List<DocumentSnapshot> documents = await Future.wait(futureDocuments);
+      promotDoc = documents.map((e) => e.data()).toList();
+
+      return documents;
+    } catch (e) {
+      print("Error fetching data from second collection: $e");
+      return []; // Return empty list in case of error
+    }
+  }
+
+  // Rearrange doc2 based on whether the document names from doc1 are present in doc2
+  void rearrange() {
+    List<Map<String, dynamic>> rearrangedDoc2 = [];
+
+    // Add documents from doc2 that match document names from doc1
+    for (var name in promotDoc) {
+      var matchingDocs = popArr.where((doc) => doc['name'] == name["name"]);
+      rearrangedDoc2.addAll(matchingDocs);
+    }
+    print(rearrangedDoc2.length);
+
+    for (var doc in popArr) {
+      if (!promotDoc
+          .any((promotDocItem) => promotDocItem['name'] == doc['name'])) {
+        rearrangedDoc2.add(doc);
+      }
+    }
+
+    setState(() {
+      popArr = rearrangedDoc2;
+    });
+    print(rearrangedDoc2.length);
   }
 
 // getting username for display
@@ -77,7 +134,10 @@ class _HomeViewState extends State<HomeView> {
     super.initState();
 
     fetchRestaurantData();
+    fetchPromotionData('Promotions', 'restaurants');
     fetchUserData();
+    Future.delayed(const Duration(seconds: 2), () => rearrange());
+    // rearrange();
   }
 
   List<Map<String, dynamic>> recentArr = [

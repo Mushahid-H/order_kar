@@ -32,52 +32,13 @@ class _MenuItemsViewState extends State<MenuItemsView> {
   void initState() {
     super.initState();
 
-    if (widget.mObj["name"] == "Promotions") {
-      fetchPromotionData('Promotions', 'restaurants');
-    } else {
-      fetchData();
-    }
+    fetchData();
 
     Future.delayed(const Duration(seconds: 3), () {
       setState(() {
         _searchResult = List.from(mObjList);
       });
     });
-  }
-
-  // fetching promotional dataFuture<void> fetchRestaurantData() async {
-  Future<List<Map<String, dynamic>>> fetchPromotionData(
-      String firstCollectionPath, String secondCollectionPath) async {
-    try {
-      // Get documents from the first collection
-      QuerySnapshot firstCollectionSnapshot = await FirebaseFirestore.instance
-          .collection(firstCollectionPath)
-          .get();
-
-      // Extract document IDs (names) from the first collection
-      documentIds = firstCollectionSnapshot.docs.map((doc) => doc.id).toList();
-
-      // Use the document IDs to construct queries for the second collection
-      List<Future<DocumentSnapshot>> futureDocuments = documentIds.map((id) {
-        return FirebaseFirestore.instance
-            .collection(secondCollectionPath)
-            .doc(id)
-            .get();
-      }).toList();
-
-      // Wait for all documents to be retrieved
-      List<DocumentSnapshot> documents = await Future.wait(futureDocuments);
-      // Process the documents retrieved from the second collection
-      List<Map<String, dynamic>> data =
-          documents.map((doc) => doc.data() as Map<String, dynamic>).toList();
-
-      menuItemsArr = data;
-
-      return data;
-    } catch (e) {
-      print("Error fetching data from second collection: $e");
-      return []; // Return empty list in case of error
-    }
   }
 
 // data form collection
@@ -125,6 +86,8 @@ class _MenuItemsViewState extends State<MenuItemsView> {
     }
   }
 
+  //  condition for promotions
+
 // search functionality
   void search(String query) {
     if (query.isEmpty) {
@@ -139,17 +102,11 @@ class _MenuItemsViewState extends State<MenuItemsView> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.mObj["name"] == "Promotions") {
-      mObjList = menuItemsArr
-          .where((item) => documentIds.contains(item["name"]))
-          .toList();
-    } else {
-      mObjList = menuItemsArr
-          .where((item) => item.containsValue(widget.mObj["name"]))
-          .toList();
-    }
+    mObjList = menuItemsArr
+        .where((item) => item.containsValue(widget.mObj["name"]))
+        .toList();
 
-    _searchResult = mObjList;
+    // _searchResult = mObjList;
 
     return Scaffold(
       body: SingleChildScrollView(

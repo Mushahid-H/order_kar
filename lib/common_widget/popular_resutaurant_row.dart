@@ -57,6 +57,15 @@ class PopularRestaurantRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  pObj["sponsored"] == true
+                      ? Text(
+                          "Sponsored",
+                          style: TextStyle(
+                              color: TColor.primary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700),
+                        )
+                      : Text(""),
                   Text(
                     pObj["name"],
                     textAlign: TextAlign.center,

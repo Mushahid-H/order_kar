@@ -110,7 +110,7 @@ class _MenuViewState extends State<MenuView> {
                         var mObj = menuArr[index] as Map? ?? {};
                         return GestureDetector(
                           onTap: () {
-                            if (mObj["name"] == "Promotions") {
+                            if (mObj["name"] == "QR Scanner") {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(

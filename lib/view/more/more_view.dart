@@ -33,18 +33,6 @@ class _MoreViewState extends State<MoreView> {
       "base": 0
     },
     {
-      "index": "3",
-      "name": "Notifications",
-      "image": "assets/img/more_notification.png",
-      "base": 15
-    },
-    {
-      "index": "4",
-      "name": "Inbox",
-      "image": "assets/img/more_inbox.png",
-      "base": 0
-    },
-    {
       "index": "5",
       "name": "About Us",
       "image": "assets/img/more_info.png",
