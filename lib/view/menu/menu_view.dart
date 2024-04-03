@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:orderkar/view/qr_code_scanner.dart';
 
 import '../../common/color_extension.dart';
 import '../../common_widget/round_textfield.dart';
@@ -33,8 +34,8 @@ class _MenuViewState extends State<MenuView> {
       "image": "assets/img/menu_4.png",
     },
     {
-      "name": "Promotions",
-      "image": "assets/img/menu_4.png",
+      "name": "QR Scanner",
+      "image": "assets/img/qr.png",
     },
   ];
   TextEditingController txtSearch = TextEditingController();
@@ -109,14 +110,23 @@ class _MenuViewState extends State<MenuView> {
                         var mObj = menuArr[index] as Map? ?? {};
                         return GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => MenuItemsView(
-                                  mObj: mObj,
+                            if (mObj["name"] == "Promotions") {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => QRScannerScreen(),
                                 ),
-                              ),
-                            );
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MenuItemsView(
+                                    mObj: mObj,
+                                  ),
+                                ),
+                              );
+                            }
                           },
                           child: Stack(
                             alignment: Alignment.centerRight,
