@@ -26,6 +26,8 @@ class _HomeViewState extends State<HomeView> {
   String userAddress = '';
   List promotDoc = [];
   List<String> documentIds = [];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
 // fetching restaurant data
   Future<void> fetchRestaurantData() async {
@@ -126,6 +128,40 @@ class _HomeViewState extends State<HomeView> {
     } catch (e) {
       print("Error fetching user data: $e");
       // Handle error as needed
+    }
+  }
+
+  void getPurchasedItems() async {
+    try {
+      // Get the current user's ID
+      String? userId = _auth.currentUser?.uid;
+
+      if (userId != null) {
+        // Reference to the purchasedItems document within the user's document
+        DocumentSnapshot purchasedItemsDocSnapshot = await _firestore
+            .collection('users')
+            .doc(userId)
+            .collection('purchasedItems')
+            .doc('purchasedItems')
+            .get();
+
+        // Check if the document exists
+        if (purchasedItemsDocSnapshot.exists) {
+          // Return the data if the document exists
+          recentArr
+              .add(purchasedItemsDocSnapshot.data() as Map<String, dynamic>);
+        } else {
+          // Return null if the document does not exist
+          print('No purchasedItems document found for the user.');
+          return null;
+        }
+      } else {
+        print('User is not authenticated.');
+        return null;
+      }
+    } catch (e) {
+      print('Error getting purchasedItems document: $e');
+      return null;
     }
   }
 
@@ -308,39 +344,39 @@ class _HomeViewState extends State<HomeView> {
               ),
 
               // RECENT ITEMS
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: ViewAllTitleRow(
-                  title: "Recent Items",
-                  onView: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ViewAllItems(
-                                title: "All Recent Items", popArr: recentArr)));
-                  },
-                ),
-              ),
-              ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                itemCount: 3,
-                itemBuilder: ((context, index) {
-                  var rObj = recentArr[index] as Map? ?? {};
-                  return RecentItemRow(
-                    rObj: rObj,
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ItemDetailsView(
-                                    iobj: rObj,
-                                  )));
-                    },
-                  );
-                }),
-              )
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(horizontal: 20),
+              //   child: ViewAllTitleRow(
+              //     title: "Recent Items",
+              //     onView: () {
+              //       Navigator.push(
+              //           context,
+              //           MaterialPageRoute(
+              //               builder: (context) => ViewAllItems(
+              //                   title: "All Recent Items", popArr: recentArr)));
+              //     },
+              //   ),
+              // ),
+              // ListView.builder(
+              //   physics: const NeverScrollableScrollPhysics(),
+              //   shrinkWrap: true,
+              //   padding: const EdgeInsets.symmetric(horizontal: 15),
+              //   itemCount: 3,
+              //   itemBuilder: ((context, index) {
+              //     var rObj = recentArr[index] as Map? ?? {};
+              //     return RecentItemRow(
+              //       rObj: rObj,
+              //       onTap: () {
+              //         Navigator.push(
+              //             context,
+              //             MaterialPageRoute(
+              //                 builder: (context) => ItemDetailsView(
+              //                       iobj: rObj,
+              //                     )));
+              //       },
+              //     );
+              //   }),
+              // )
             ],
           ),
         ),

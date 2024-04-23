@@ -1,13 +1,17 @@
 import 'dart:ffi';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:orderkar/common/color_extension.dart';
 import 'package:orderkar/common/extension.dart';
 import 'package:orderkar/common/globs.dart';
 import 'package:orderkar/common_widget/round_button.dart';
 import 'package:orderkar/view/Cart_Firebase.dart';
+import 'package:orderkar/view/more/checkout_message_view.dart';
 
 import 'checkout_view.dart';
 
@@ -24,6 +28,13 @@ class _MyOrderViewState extends State<MyOrderView> {
   var deliveryCost = 5;
   double subTotal = 0.0;
   bool isSubUpdated = false;
+  int selectMethod = -1;
+
+  List paymentArr = [
+    {"name": "Cash on delivery", "icon": "assets/img/cash.png"},
+
+    // {"name": "test@gmail.com", "icon": "assets/img/paypal.png"},
+  ];
 
   @override
   void initState() {
@@ -31,6 +42,22 @@ class _MyOrderViewState extends State<MyOrderView> {
     subTotal = 0;
     Future.delayed(const Duration(milliseconds: 150), () {
       setState(() {});
+    });
+  }
+
+  File? _image;
+
+  final picker = ImagePicker();
+
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
     });
   }
 
@@ -257,16 +284,156 @@ class _MyOrderViewState extends State<MyOrderView> {
                     const SizedBox(
                       height: 25,
                     ),
-                    RoundButton(
-                      title: "Checkout",
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const CheckoutView(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Payment method",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: TColor.secondaryText,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                              ElevatedButton(
+                                  onPressed: () async {
+                                    await LaunchApp.openApp(
+                                        androidPackageName:
+                                            'com.techlogix.mobilinkcustomer',
+                                        openStore: true,
+                                        appStoreLink:
+                                            'https://play.google.com/store/apps/details?id=com.techlogix.mobilinkcustomer');
+                                  },
+                                  style: ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStateProperty.all<Color>(Colors
+                                            .green), // Background color when the button is enabled
+                                    foregroundColor:
+                                        MaterialStateProperty.all<Color>(
+                                            Colors.white),
+                                    padding: MaterialStateProperty.all<
+                                            EdgeInsetsGeometry>(
+                                        const EdgeInsets.all(
+                                            8)), // Padding around the button
+                                    shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                            8), // Button border radius
+                                      ),
+                                    ),
+                                  ),
+                                  child: const Text('Open Jazzcash')),
+                            ],
                           ),
-                        );
-                      },
+                          ListView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              padding: EdgeInsets.zero,
+                              shrinkWrap: true,
+                              itemCount: paymentArr.length,
+                              itemBuilder: (context, index) {
+                                var pObj = paymentArr[index] as Map? ?? {};
+                                return Container(
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 8.0, horizontal: 15.0),
+                                  decoration: BoxDecoration(
+                                      color: TColor.textfield,
+                                      borderRadius: BorderRadius.circular(5),
+                                      border: Border.all(
+                                          color: TColor.secondaryText
+                                              .withOpacity(0.2))),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          pObj["name"] ?? '',
+                                          style: TextStyle(
+                                              color: TColor.primaryText,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500),
+                                        ),
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            selectMethod = index;
+                                          });
+                                        },
+                                        child: Icon(
+                                          selectMethod == index
+                                              ? Icons.radio_button_on
+                                              : Icons.radio_button_off,
+                                          color: TColor.primary,
+                                          size: 15,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              })
+                        ],
+                      ),
+                    ),
+                    selectMethod == -1
+                        ? Column(
+                            children: <Widget>[
+                              _image == null
+                                  ? const Placeholder(
+                                      fallbackWidth: 100,
+                                      fallbackHeight: 100,
+                                    )
+                                  : Image.file(
+                                      _image!,
+                                      width: 200,
+                                      height: 200,
+                                    ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              ElevatedButton(
+                                onPressed: getImage,
+                                child: const Text('Payment Screeshot'),
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              )
+                            ],
+                          )
+                        : Column(),
+                    // RoundButton(
+                    //   title: "Checkout",
+                    //   onPressed: () {
+                    //     print(itemArr);
+                    //     Navigator.push(
+                    //       context,
+                    //       MaterialPageRoute(
+                    //         builder: (context) =>
+                    //             CheckoutView(itemArr: itemArr),
+                    //       ),
+                    //     );
+                    //   },
+                    // ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 25),
+                      child: RoundButton(
+                          title: "Check Out",
+                          onPressed: () {
+                            showModalBottomSheet(
+                                context: context,
+                                backgroundColor: Colors.transparent,
+                                isScrollControlled: true,
+                                builder: (context) {
+                                  return CheckoutMessageView();
+                                });
+                          }),
                     ),
                     const SizedBox(
                       height: 20,

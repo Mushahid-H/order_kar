@@ -1,16 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:external_app_launcher/external_app_launcher.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:orderkar/common/color_extension.dart';
 import 'package:orderkar/common/extension.dart';
 import 'package:orderkar/common/globs.dart';
 import 'package:orderkar/common_widget/round_button.dart';
-import 'package:orderkar/view/more/add_card_view.dart';
 
 // import 'change_address_view.dart';
 import 'checkout_message_view.dart';
 
 class CheckoutView extends StatefulWidget {
-  const CheckoutView({super.key});
+  var itemArr;
+  CheckoutView({super.key, required itemArr});
 
   @override
   State<CheckoutView> createState() => _CheckoutViewState();
@@ -22,6 +24,36 @@ class _CheckoutViewState extends State<CheckoutView> {
 
     // {"name": "test@gmail.com", "icon": "assets/img/paypal.png"},
   ];
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  void savePurchasedItems(List<Map<String, dynamic>> itemArr) {
+    String? userId = _auth.currentUser?.email;
+    // Reference to the "users" collection
+    CollectionReference users = _firestore.collection('users');
+
+    // Reference to a specific document for purchased items
+    DocumentReference purchasedItemsDoc =
+        users.doc(userId).collection('purchasedItems').doc();
+
+    // Iterate over the itemArr and save each food item as a separate document
+    itemArr.forEach((item) {
+      // Generate a unique ID for the food item document
+      String itemId = _firestore.collection('users').doc().id;
+
+      // Reference to the specific document for the food item
+      DocumentReference foodItemDoc =
+          purchasedItemsDoc.collection('items').doc(itemId);
+
+      // Add the food item data to the document
+      foodItemDoc.set(item).then((value) {
+        print('Food item saved successfully with ID: $itemId');
+      }).catchError((error) {
+        print('Failed to save food item: $error');
+      });
+    });
+  }
 
   void getCardData() async {
     try {
@@ -47,11 +79,13 @@ class _CheckoutViewState extends State<CheckoutView> {
   @override
   void initState() {
     super.initState();
+
     getCardData();
   }
 
   @override
   Widget build(BuildContext context) {
+    print(widget.itemArr);
     return Scaffold(
       backgroundColor: TColor.white,
       body: SingleChildScrollView(
@@ -147,24 +181,16 @@ class _CheckoutViewState extends State<CheckoutView> {
                               fontSize: 13,
                               fontWeight: FontWeight.w500),
                         ),
-                        // TextButton.icon(
-                        //   onPressed: () {
-                        //     Navigator.push(
-                        //         context,
-                        //         MaterialPageRoute(
-                        //             builder: (context) => AddCardView(
-                        //                   onCardAdded: getCardData,
-                        //                 )));
-                        //   },
-                        //   icon: Icon(Icons.add, color: TColor.primary),
-                        //   label: Text(
-                        //     "Add Card",
-                        //     style: TextStyle(
-                        //         color: TColor.primary,
-                        //         fontSize: 13,
-                        //         fontWeight: FontWeight.w700),
-                        //   ),
-                        // )
+                        ElevatedButton(
+                            onPressed: () async {
+                              await LaunchApp.openApp(
+                                  androidPackageName:
+                                      'com.techlogix.mobilinkcustomer',
+                                  openStore: true,
+                                  appStoreLink:
+                                      'https://play.google.com/store/apps/details?id=com.techlogix.mobilinkcustomer');
+                            },
+                            child: Text('Open Jazzcash'))
                       ],
                     ),
                     ListView.builder(
@@ -186,12 +212,15 @@ class _CheckoutViewState extends State<CheckoutView> {
                                         TColor.secondaryText.withOpacity(0.2))),
                             child: Row(
                               children: [
-                                Image.asset(pObj["icon"].toString(),
-                                    width: 50, height: 20, fit: BoxFit.contain),
+                                // Image.asset(
+                                //     pObj["icon"].toString() ?? 'img/cash.png',
+                                //     width: 50,
+                                //     height: 20,
+                                //     fit: BoxFit.contain),
                                 // const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    pObj["name"],
+                                    pObj["name"] ?? '',
                                     style: TextStyle(
                                         color: TColor.primaryText,
                                         fontSize: 12,
@@ -352,7 +381,8 @@ class _CheckoutViewState extends State<CheckoutView> {
                           backgroundColor: Colors.transparent,
                           isScrollControlled: true,
                           builder: (context) {
-                            return const CheckoutMessageView();
+                            savePurchasedItems(widget.itemArr);
+                            return CheckoutMessageView();
                           });
                     }),
               ),

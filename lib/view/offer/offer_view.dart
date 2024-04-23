@@ -126,15 +126,15 @@ class _OfferViewState extends State<OfferView> {
               const SizedBox(
                 height: 15,
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: SizedBox(
-                  width: 140,
-                  height: 30,
-                  child: RoundButton(
-                      title: "check Offers", fontSize: 12, onPressed: () {}),
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(horizontal: 20),
+              //   child: SizedBox(
+              //     width: 140,
+              //     height: 30,
+              //     child: RoundButton(
+              //         title: "check Offers", fontSize: 12, onPressed: () {}),
+              //   ),
+              // ),
               const SizedBox(
                 height: 15,
               ),
