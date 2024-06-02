@@ -437,7 +437,7 @@ class _ItemDetailsViewState extends State<ItemDetailsView> {
                                                         height: 15,
                                                       ),
                                                       Text(
-                                                        "\$${(widget.iobj["price"] * qty).toString()}",
+                                                        "Pkr ${(widget.iobj["price"] * qty).toString()}",
                                                         style: TextStyle(
                                                             color: TColor
                                                                 .primaryText,

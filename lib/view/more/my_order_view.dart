@@ -142,6 +142,7 @@ class _MyOrderViewState extends State<MyOrderView> {
                                     element["totalPrice"] as double)
                                 .reduce((value, element) => value + element) *
                             cObj["qty"];
+
                         return Container(
                           padding: const EdgeInsets.symmetric(
                               vertical: 15, horizontal: 25),
@@ -161,7 +162,7 @@ class _MyOrderViewState extends State<MyOrderView> {
                                 width: 15,
                               ),
                               Text(
-                                "\$${cObj["totalPrice"].toString()}",
+                                "Pkr ${cObj["totalPrice"].toString()}",
                                 style: TextStyle(
                                     color: TColor.primaryText,
                                     fontSize: 13,
@@ -220,7 +221,7 @@ class _MyOrderViewState extends State<MyOrderView> {
                               fontWeight: FontWeight.w700),
                         ),
                         Text(
-                          "\$${subTotal.toString()}",
+                          "Pkr ${subTotal.toString()}",
                           style: TextStyle(
                               color: TColor.primary,
                               fontSize: 13,
